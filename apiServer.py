@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import Blueprint
+import query.c1_functiona as c1
 
 # testing
 import json
@@ -37,9 +38,26 @@ def example_year(year):
 c1_bp = Blueprint('C1',__name__)
 
 
-@c1_bp.route('/funcA/<string:name>')
-def c1a(name):
-    return _getData('./hy.json')
+@c1_bp.route('/funcA/<int:id>')
+def c1a(id):
+    # return _getData('./hy.json')
+    q1, q2 = c1.c1_functiona(id)
+
+    result = {}
+    columns = []
+    q1 = json.loads(q1)
+
+    for d in q1["schema"]["fields"]:
+        if d["name"] != "index":
+            columns.append(d["name"])
+    for d in q1["data"]:
+        del d["index"]
+
+    # print(type(q1))
+    # return jsonify(q1)
+    result["columns"] = columns
+    result["data"] = q1["data"]
+    return jsonify({"result":result})
 
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
