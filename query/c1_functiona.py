@@ -10,6 +10,7 @@ from . import engine as eg
 engine = eg.engine_gen(pwd)
 
 def c1_functiona(driverId,query_engine=engine):
+
     query = '''
             WITH L_races(raceId, points) AS(
                 SELECT r.raceId, r.points
@@ -48,6 +49,7 @@ def c1_functiona(driverId,query_engine=engine):
     return json_all_result, json_compare_result
 
 json_all_result, json_compare_result = c1_functiona(2)
+
 print(json_compare_result)
 
 
