@@ -115,7 +115,72 @@ def c1_c(id):
     return jsonify({"result":result})
 
 
+### C2 API ###
+@c2_bp.route('/investable-constructors')
+def c2_get_investable_constructors():
+    '''
+        List the investable constructors
+        (Constructors who match the conditions)
+    '''
+    # mock data
+    result = {
+        "constructors":[
+            {
+                "constructor_id": 2000,
+		        "name": "Benz",
+                "total_point": [
+                    {2017: 100},
+                    {2016: 80},
+                    {2015: 70}
+                ],
+                "Budgets": [
+                    {2017: 70},
+                    {2016: 45},
+                    {2015: 20}
+                ],
+                "avg_pits": [
+                    {2017: 3.0},
+                    {2016: 2.7},
+                    {2015: 1.5}
+                ],
+                "errors": [
+                    {2017: 3},
+                    {2016: 2},
+                    {2015: 1}
+                ]
+            },
+		    {
+		        "driver_id": 1500,
+		        "name": "Red Bull Racing",
+                "total_point": [
+                    {2017: 200},
+                    {2016: 100},
+                    {2015: 30}
+                ],
+                "budgets": [
+                    {2017: 50},
+                    {2016: 30},
+                    {2015: 10}
+                ],
+                "avg_pits": [
+                    {2017: 2.0},
+                    {2016: 1.8},
+                    {2015: 3.0}
+                ],
+                "errors": [
+                    {2017: 3},
+                    {2016: 5},
+                    {2015: 7}
+                ]
+		    }
+        ]
+    }
+
+    return jsonify({"result":result})
+
+
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
     app.register_blueprint(c1_bp, url_prefix='/c1')
+    app.register_blueprint(c2_bp, url_prefix='/c2')
     app.run(host='0.0.0.0', port=8000)
