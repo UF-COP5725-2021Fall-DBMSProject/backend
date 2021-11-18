@@ -1,6 +1,8 @@
 from flask import Flask
 from flask import jsonify
 from flask import Blueprint
+from flask import request
+from werkzeug.wrappers import response
 import query.c1_functions as c1Funcs
 
 # testing
@@ -69,7 +71,11 @@ def c1_get_competitive_drivers():
         ]
     }
 
-    return jsonify({"result":result})
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @c1_bp.route('/funcA/<int:id>')
@@ -91,7 +97,13 @@ def c1_a(id):
     # return jsonify(q1)
     result["columns"] = columns
     result["data"] = q1["data"]
-    return jsonify({"result":result})
+    
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 
 @c1_bp.route('/funcB/<int:id>')
 def c1_b(id):
@@ -101,7 +113,13 @@ def c1_b(id):
     result = {}
     q = json.loads(q)
     result["data"] = q["data"]
-    return jsonify({"result":result})
+    
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 
 
 @c1_bp.route('/funcC/<int:id>')
@@ -112,10 +130,94 @@ def c1_c(id):
     result = {}
     # q = json.loads(q)
     # result["data"] = q["data"]
-    return jsonify({"result":result})
+    # [Important] Let web are able to hit the domain 'localhost'
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+### C2 API ###
+@c2_bp.route('/investable-constructors')
+def c2_get_investable_constructors():
+    '''
+        List the investable constructors
+        (Constructors who match the conditions)
+    '''
+    # mock data
+    start_year = request.args.get('start_year')
+    end_year = request.args.get('end_year')
+    if not start_year:
+        start_year = 2015
+    if not end_year:
+        end_year = 2017
+    
+    # query range start_year ~ end_year, determine by client
+    # return the value with "ASC" order by year 
+    result = {}
+    result["data"] = {
+        "constructors":[
+            {
+                "constructor_id": 2000,
+		        "name": "Benz",
+                "total_point": [
+                    100, 150, 220
+                ],
+                "Budgets": [
+                    20, 45, 70
+                ],
+                "avg_pits": [
+                    1.5, 2.0, 2.1
+                ],
+                "errors": [
+                    1, 3, 2
+                ]
+            },
+		    {
+		        "driver_id": 1500,
+		        "name": "Red Bull Racing",
+                "total_point": [
+                    60, 165, 300
+                ],
+                "Budgets": [
+                    40, 50, 80
+                ],
+                "avg_pits": [
+                    2.2, 2.3, 2.5
+                ],
+                "errors": [
+                    5, 2, 4
+                ]
+		    },
+      		{
+		        "driver_id": 1000,
+		        "name": "Toyota",
+                "total_point": [
+                    10, 30, 120
+                ],
+                "Budgets": [
+                    10, 15, 25
+                ],
+                "avg_pits": [
+                    2.2, 2.3, 2.5
+                ],
+                "errors": [
+                    10, 15, 8
+                ]
+		    }
+        ]
+    }
+
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
     app.register_blueprint(c1_bp, url_prefix='/c1')
-    app.run(host='0.0.0.0', port=8000)
+    app.register_blueprint(c2_bp, url_prefix='/c2')
+    app.run(host='0.0.0.0', port=8000, debug=True)
