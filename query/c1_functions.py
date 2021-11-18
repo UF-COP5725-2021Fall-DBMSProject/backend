@@ -90,6 +90,8 @@ json_all_result = c1_functionb(2)
 print(json_all_result)
 
 
+def c1_functionc(driverId, query_engine=engine):
+    #TODO
 
 
 # https://www.oracletutorial.com/python-oracle/connecting-to-oracle-database-in-python/

@@ -78,17 +78,18 @@ def c1b(id):
 
     result = {}
     q = json.loads(q)
-
-    # for d in q["schema"]["fields"]:
-    #     if d["name"] != "index":
-    #         columns.append(d["name"])
-    # for d in q["data"]:
-    #     del d["index"]
-
-    # print(type(q1))
-    # return jsonify(q1)
-    # result["columns"] = columns
     result["data"] = q["data"]
+    return jsonify({"result":result})
+
+
+@c1_bp.route('/funcC/<int:id>')
+def c1c(id):
+    #TODO
+    # q = c1Funcs.c1_functionc(id)
+
+    result = {}
+    # q = json.loads(q)
+    # result["data"] = q["data"]
     return jsonify({"result":result})
 
 ### C2 API ###
