@@ -51,9 +51,9 @@ def c1_get_competitive_drivers():
 
 
 @c1_bp.route('/funcA/<int:id>')
-def c1a(id):
+def c1_a(id):
     # return _getData('./hy.json')
-    q1, q2 = c1Funcs.c1_functiona(id)
+    q1, q2 = c1Funcs.c1_function_a(id)
 
     result = {}
     columns = []
@@ -72,9 +72,9 @@ def c1a(id):
     return jsonify({"result":result})
 
 @c1_bp.route('/funcB/<int:id>')
-def c1b(id):
+def c1_b(id):
     # return _getData('./hy.json')
-    q = c1Funcs.c1_functionb(id)
+    q = c1Funcs.c1_function_b(id)
 
     result = {}
     q = json.loads(q)
@@ -83,9 +83,9 @@ def c1b(id):
 
 
 @c1_bp.route('/funcC/<int:id>')
-def c1c(id):
+def c1_c(id):
     #TODO
-    # q = c1Funcs.c1_functionc(id)
+    # q = c1Funcs.c1_function_c(id)
 
     result = {}
     # q = json.loads(q)

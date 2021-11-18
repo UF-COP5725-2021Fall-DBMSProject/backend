@@ -14,7 +14,7 @@ from . import engine as eg
 
 engine = eg.engine_gen(pwd)
 
-def c1_functiona(driverId,query_engine=engine):
+def c1_function_a(driverId,query_engine=engine):
 
     query = '''
             WITH L_races(raceId, points) AS(
@@ -53,11 +53,11 @@ def c1_functiona(driverId,query_engine=engine):
     json_compare_result = data.to_json(orient="table")
     return json_all_result, json_compare_result
 
-json_all_result, json_compare_result = c1_functiona(2)
+json_all_result, json_compare_result = c1_function_a(2)
 print(json_compare_result)
 
 
-def c1_functionb(driverId, query_engine=engine):
+def c1_function_b(driverId, query_engine=engine):
     query = '''
              WITH L_first_3_year_races(points, rank) AS(
                 SELECT sum(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
@@ -86,11 +86,11 @@ def c1_functionb(driverId, query_engine=engine):
     json_all_result = data.to_json(orient="table")
     return json_all_result
 
-json_all_result = c1_functionb(2)
+json_all_result = c1_function_b(2)
 print(json_all_result)
 
 
-def c1_functionc(driverId, query_engine=engine):
+def c1_function_c(driverId, query_engine=engine):
     #TODO
 
 
