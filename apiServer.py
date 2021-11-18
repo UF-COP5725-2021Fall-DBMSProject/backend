@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import Blueprint
+from flask import request
 from werkzeug.wrappers import response
 import query.c1_functions as c1Funcs
 
@@ -145,6 +146,15 @@ def c2_get_investable_constructors():
         (Constructors who match the conditions)
     '''
     # mock data
+    start_year = request.args.get('start_year')
+    end_year = request.args.get('end_year')
+    if not start_year:
+        start_year = 2015
+    if not end_year:
+        end_year = 2017
+    
+    # query range start_year ~ end_year, determine by client
+    # return the value with "ASC" order by year 
     result = {}
     result["data"] = {
         "constructors":[
@@ -152,48 +162,48 @@ def c2_get_investable_constructors():
                 "constructor_id": 2000,
 		        "name": "Benz",
                 "total_point": [
-                    {2017: 100},
-                    {2016: 80},
-                    {2015: 70}
+                    100, 150, 220
                 ],
                 "Budgets": [
-                    {2017: 70},
-                    {2016: 45},
-                    {2015: 20}
+                    20, 45, 70
                 ],
                 "avg_pits": [
-                    {2017: 3.0},
-                    {2016: 2.7},
-                    {2015: 1.5}
+                    1.5, 2.0, 2.1
                 ],
                 "errors": [
-                    {2017: 3},
-                    {2016: 2},
-                    {2015: 1}
+                    1, 3, 2
                 ]
             },
 		    {
 		        "driver_id": 1500,
 		        "name": "Red Bull Racing",
                 "total_point": [
-                    {2017: 200},
-                    {2016: 100},
-                    {2015: 30}
+                    60, 165, 300
                 ],
-                "budgets": [
-                    {2017: 50},
-                    {2016: 30},
-                    {2015: 10}
+                "Budgets": [
+                    40, 50, 80
                 ],
                 "avg_pits": [
-                    {2017: 2.0},
-                    {2016: 1.8},
-                    {2015: 3.0}
+                    2.2, 2.3, 2.5
                 ],
                 "errors": [
-                    {2017: 3},
-                    {2016: 5},
-                    {2015: 7}
+                    5, 2, 4
+                ]
+		    },
+      		{
+		        "driver_id": 1000,
+		        "name": "Toyota",
+                "total_point": [
+                    10, 30, 120
+                ],
+                "Budgets": [
+                    10, 15, 25
+                ],
+                "avg_pits": [
+                    2.2, 2.3, 2.5
+                ],
+                "errors": [
+                    10, 15, 8
                 ]
 		    }
         ]
