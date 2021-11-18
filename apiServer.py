@@ -46,7 +46,29 @@ def c1_get_competitive_drivers():
         Comparators to Lewis, get the drivers who we want to compare with Lewis
         (ex. FunctionA over X% & FunctionB over Y% & Function C over Z%)
     '''
-    result = {}
+    # mock data
+    result = {
+        "lewis_id": 1,
+        "drivers":[
+            {
+                "driver_id": 2000,
+		        "name": "Anmol"
+            },
+		    {
+		        "driver_id": 1500,
+		        "name": "YiMing"
+		    },
+            {
+		        "driver_id": 1000,
+		        "name": "Ryan Huang"
+		    },
+            {
+		        "driver_id": 999,
+		        "name": "Jim Chou"
+		    }
+        ]
+    }
+
     return jsonify({"result":result})
 
 
