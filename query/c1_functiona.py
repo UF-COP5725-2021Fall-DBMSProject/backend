@@ -1,3 +1,8 @@
+###
+# c1-function a
+# First Query: List the Lewis and another driver's score in same games.
+# Second Query: Compare their total score 
+###
 import json
 import sys
 pwd = sys.argv[1]
