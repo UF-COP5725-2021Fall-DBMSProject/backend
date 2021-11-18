@@ -50,7 +50,6 @@ print(json_all_result)
 
 
 
-
 # https://www.oracletutorial.com/python-oracle/connecting-to-oracle-database-in-python/
 # https://oracle.github.io/python-cx_Oracle/
 # https://stackoverflow.com/questions/55823744/how-to-fix-cx-oracle-databaseerror-dpi-1047-cannot-locate-a-64-bit-oracle-cli
