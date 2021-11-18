@@ -41,7 +41,7 @@ c4_bp = Blueprint('C4',__name__)
 
 ### C1 API ###
 @c1_bp.route('/competitiveDrivers')
-def getCompetitiveDrivers():
+def c1_get_competitive_drivers():
     '''
         Comparators to Lewis, get the drivers who we want to compare with Lewis
         (ex. FunctionA over X% & FunctionB over Y% & Function C over Z%)
@@ -92,7 +92,6 @@ def c1c(id):
     # result["data"] = q["data"]
     return jsonify({"result":result})
 
-### C2 API ###
 
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
