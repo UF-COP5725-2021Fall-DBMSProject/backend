@@ -22,7 +22,7 @@ def c1_functiona(query_engine,driverId):
                 INNER JOIN results r ON d.driverId=r.driverID
                 WHERE d.driverId = 1
             )
-            SELECT ra.year, d.forename, d.surname, ra.raceId , r.points as someone_points, lr.points as L_point
+            SELECT ra.year, ra.name, d.forename, d.surname, ra.raceId , r.points as someone_points, lr.points as L_point
             FROM DRIVERS d 
             INNER JOIN results r ON d.driverId=r.driverID
             INNER JOIN races ra ON r.raceId = ra.raceId
@@ -56,8 +56,9 @@ def c1_functiona(query_engine,driverId):
     json_compare_result = data.to_json(orient="table")
     return json_all_result, json_compare_result
 
-json_all_result, json_compare_result = c1_functiona(engine, 2)
-print(json_compare_result)
+compare_in_each_race, compare_all_same_race = c1_functiona(engine, 2)
+#print(compare_in_each_race)
+#print(compare_all_same_race)
 
 
 
