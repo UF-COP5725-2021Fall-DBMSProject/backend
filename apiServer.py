@@ -40,7 +40,7 @@ c3_bp = Blueprint('C3',__name__)
 c4_bp = Blueprint('C4',__name__)
 
 ### C1 API ###
-@c1_bp.route('/competitiveDrivers')
+@c1_bp.route('/competitive-drivers')
 def c1_get_competitive_drivers():
     '''
         Comparators to Lewis, get the drivers who we want to compare with Lewis

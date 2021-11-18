@@ -14,6 +14,10 @@ from . import engine as eg
 
 engine = eg.engine_gen(pwd)
 
+#TODO
+# def c1_function_get_competitive_drivers(driverId, query_engine=engine):
+#     return
+
 def c1_function_a(driverId,query_engine=engine):
 
     query = '''
@@ -89,10 +93,9 @@ def c1_function_b(driverId, query_engine=engine):
 json_all_result = c1_function_b(2)
 print(json_all_result)
 
-
-def c1_function_c(driverId, query_engine=engine):
-    #TODO
-
+#TODO
+# def c1_function_c(driverId, query_engine=engine):
+#     return
 
 # https://www.oracletutorial.com/python-oracle/connecting-to-oracle-database-in-python/
 # https://oracle.github.io/python-cx_Oracle/
