@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import Blueprint
+from werkzeug.wrappers import response
 import query.c1_functions as c1Funcs
 
 # testing
@@ -69,7 +70,11 @@ def c1_get_competitive_drivers():
         ]
     }
 
-    return jsonify({"result":result})
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @c1_bp.route('/funcA/<int:id>')
@@ -91,7 +96,13 @@ def c1_a(id):
     # return jsonify(q1)
     result["columns"] = columns
     result["data"] = q1["data"]
-    return jsonify({"result":result})
+    
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 
 @c1_bp.route('/funcB/<int:id>')
 def c1_b(id):
@@ -101,7 +112,13 @@ def c1_b(id):
     result = {}
     q = json.loads(q)
     result["data"] = q["data"]
-    return jsonify({"result":result})
+    
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 
 
 @c1_bp.route('/funcC/<int:id>')
@@ -112,7 +129,12 @@ def c1_c(id):
     result = {}
     # q = json.loads(q)
     # result["data"] = q["data"]
-    return jsonify({"result":result})
+    # [Important] Let web are able to hit the domain 'localhost'
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 ### C2 API ###
@@ -123,7 +145,8 @@ def c2_get_investable_constructors():
         (Constructors who match the conditions)
     '''
     # mock data
-    result = {
+    result = {}
+    result["data"] = {
         "constructors":[
             {
                 "constructor_id": 2000,
@@ -176,11 +199,15 @@ def c2_get_investable_constructors():
         ]
     }
 
-    return jsonify({"result":result})
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
     app.register_blueprint(c1_bp, url_prefix='/c1')
     app.register_blueprint(c2_bp, url_prefix='/c2')
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000, debug=True)
