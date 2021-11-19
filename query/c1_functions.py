@@ -13,9 +13,7 @@ from sqlalchemy import create_engine
 from . import engine as eg
 
 engine = eg.engine_gen(pwd)
-
 """
-# not yet finish
 def c1_function_get_competitive_drivers(query_engine=engine):
     query = '''
             WITH L_races(raceId, forename, surname, points) AS(
@@ -78,7 +76,7 @@ def c1_function_a(driverId,query_engine=engine):
                    sum(r.points)/count(r.raceId) as someone_avg_points, 
                    lr.forename as Lewis_forename, lr.surname as Lewis_surname,
                    sum(lr.points)/count(r.raceId) as L_avg_point, 
-                   sum(r.points)/sum(lr.points) as likes
+                   sum(r.points)/sum(lr.points) as similarity
             FROM DRIVERS d 
             INNER JOIN results r ON d.driverId=r.driverID
             INNER JOIN races ra ON r.raceId = ra.raceId
@@ -98,7 +96,7 @@ compare_in_each_race, compare_all_same_race = c1_function_a(2)
 def c1_function_b(driverId, query_engine=engine):
     query = '''
              WITH L_first_3_year_races(forename, surname, points, rank) AS(
-                SELECT forename, surname, sum(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
+                SELECT forename, surname, AVG(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
                 FROM results r
                 INNER JOIN races ra USING (raceId)
                 INNER JOIN drivers d USING (driverId)
@@ -108,7 +106,7 @@ def c1_function_b(driverId, query_engine=engine):
                 FETCH FIRST 3 ROW ONLY
             ),
             A_first_3_year_races(forename, surname, points, rank) AS(
-                SELECT forename, surname, sum(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
+                SELECT forename, surname, AVG(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
                 FROM results r
                 INNER JOIN races ra USING (raceId)
                 INNER JOIN drivers d USING (driverId)
@@ -119,14 +117,42 @@ def c1_function_b(driverId, query_engine=engine):
             )
             SELECT rank AS year,
                     l.forename as Lewis_forename,l.surname as Lewis_surname, l.points AS Lewis_score,
-                    a.forename as Others_forename, a.surname as Others_surname, a.points AS Others_score 
+                    a.forename as Others_forename, a.surname as Others_surname, a.points AS Others_score ,
             FROM L_first_3_year_races l
             INNER JOIN A_first_3_year_races a USING (rank)
             ORDER BY rank ASC
             '''.format(driverId) 
     data = pd.read_sql(query, query_engine)
-    json_all_result = data.to_json(orient="table")
-    return json_all_result
+    compare_first_three_years = data.to_json(orient="table")
+
+    query = '''
+             WITH L_first_3_year_races(driverId, points, rank) AS(
+                SELECT driverId, AVG(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
+                FROM results r
+                INNER JOIN races ra USING (raceId)
+                WHERE driverId = 1 and r.points<>0
+                GROUP BY ra.year, driverId
+                ORDER BY ra.year ASC
+                FETCH FIRST 3 ROW ONLY
+            ),
+            A_first_3_year_races(driverId, points, rank) AS(
+                SELECT driverId, AVG(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
+                FROM results r
+                INNER JOIN races ra USING (raceId)
+                WHERE driverId = {} and r.points<>0
+                GROUP BY ra.year, driverId
+                ORDER BY ra.year ASC
+                FETCH FIRST 3 ROW ONLY
+            )
+            SELECT sum(l.points)/sum(a.points) AS similarity
+            FROM L_first_3_year_races l
+            INNER JOIN A_first_3_year_races a USING (rank)
+            GROUP BY l.driverId
+            '''.format(driverId) 
+    data = pd.read_sql(query, query_engine)
+    similarity_of_first_three_years = data.to_json(orient="table")
+
+    return compare_first_three_years, similarity_of_first_three_years
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -141,6 +167,7 @@ json_all_result = c1_function_b(2)
 # json_all_result = c1_function_b(2)
 # print(json_all_result)
 >>>>>>> change c1b return structure
+
 
 def c1_function_c(driverId, query_engine=engine):
     query = '''
@@ -176,7 +203,7 @@ def c1_function_c(driverId, query_engine=engine):
                    sum(l.milliseconds)/count(l.lap)/100 as someone_avg_lap_time_in_sec, 
                    ll.forename as Lewis_forename, ll.surname as Lewis_surname,
                    sum(ll.milliseconds)/count(ll.lap)/100 as L_avg_lap_time_in_sec, 
-                   sum(l.milliseconds)/sum(ll.milliseconds) as likes
+                   sum(l.milliseconds)/sum(ll.milliseconds) as similarity
             FROM DRIVERS d 
             INNER JOIN lapTimes l ON d.driverId=l.driverID
             INNER JOIN races ra ON l.raceId = ra.raceId
