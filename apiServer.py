@@ -109,20 +109,30 @@ def c1_a(id):
 def c1_b(id):
     # return _getData('./hy.json')
     q = c1Funcs.c1_function_b(id)
-
     result = {}
     q = json.loads(q)
     lewis = [0,0,0]
     another = [0,0,0]
-    
+
     for d in q["data"]:
         lewis[d["year"]-1] = d["lewis_score"]
         another[d["year"]-1] = d["others_score"]
+        l_surname = d["lewis_surname"]
+        l_forename = d["lewis_forename"]
+        a_surname = d["others_surname"]
+        a_forename = d["others_forename"]
 
-    result["data"] = {
-        "lewis": lewis,
-        "another": another,
-    }
+    result["data"] = [
+        {
+            "name":l_forename + " " + l_surname,
+            "score": lewis
+        },
+        {
+            "name":a_forename + " " + a_surname,
+            "score":another
+        }
+    ]
+        
     response = jsonify({"result":result})
     if app.debug:
         # [Important] Let web are able to hit the domain 'localhost'

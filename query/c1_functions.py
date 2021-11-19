@@ -10,7 +10,7 @@ pwd = sys.argv[1]
 import pandas as pd
 from sqlalchemy import create_engine
 
-import engine as eg
+from . import engine as eg
 
 engine = eg.engine_gen(pwd)
 
@@ -98,8 +98,8 @@ def c1_function_b(driverId, query_engine=engine):
     json_all_result = data.to_json(orient="table")
     return json_all_result
 
-json_all_result = c1_function_b(2)
-print(json_all_result)
+# json_all_result = c1_function_b(2)
+# print(json_all_result)
 
 def c1_function_c(driverId, query_engine=engine):
     query = '''
@@ -145,8 +145,8 @@ def c1_function_c(driverId, query_engine=engine):
 
     return compare_in_each_lap, compare_avg_laps_time
 
-compare_in_each_lap, compare_avg_laps_time = c1_function_c(2)
-print(compare_in_each_lap, compare_avg_laps_time)
+# compare_in_each_lap, compare_avg_laps_time = c1_function_c(2)
+# print(compare_in_each_lap, compare_avg_laps_time)
 
 
 
