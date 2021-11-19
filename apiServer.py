@@ -90,8 +90,8 @@ def c1_a(id):
     for d in q1["schema"]["fields"]:
         if d["name"] != "index":
             columns.append(d["name"])
-    for d in q1["data"]:
-        del d["index"]
+    # for d in q1["data"]:
+    #     del d["index"]
 
     # print(type(q1))
     # return jsonify(q1)
@@ -167,7 +167,7 @@ def c2_get_investable_constructors():
                 "Budgets": [
                     20, 45, 70
                 ],
-                "avg_pits": [
+                "avg_pits_time": [
                     1.5, 2.0, 2.1
                 ],
                 "errors": [
@@ -175,7 +175,7 @@ def c2_get_investable_constructors():
                 ]
             },
 		    {
-		        "driver_id": 1500,
+		        "constructor_id": 1500,
 		        "name": "Red Bull Racing",
                 "total_point": [
                     60, 165, 300
@@ -183,7 +183,7 @@ def c2_get_investable_constructors():
                 "Budgets": [
                     40, 50, 80
                 ],
-                "avg_pits": [
+                "avg_pits_time": [
                     2.2, 2.3, 2.5
                 ],
                 "errors": [
@@ -191,7 +191,7 @@ def c2_get_investable_constructors():
                 ]
 		    },
       		{
-		        "driver_id": 1000,
+		        "constructor_id": 1000,
 		        "name": "Toyota",
                 "total_point": [
                     10, 30, 120
@@ -199,7 +199,7 @@ def c2_get_investable_constructors():
                 "Budgets": [
                     10, 15, 25
                 ],
-                "avg_pits": [
+                "avg_pits_time": [
                     2.2, 2.3, 2.5
                 ],
                 "errors": [
@@ -216,8 +216,58 @@ def c2_get_investable_constructors():
     return response
 
 
+### C4 API ###
+@c4_bp.route('/funcA/<int:id>')
+def c4_a(id):
+    # q = c4Funcs.c4_function_b(id)
+
+    # result = {}
+    # q = json.loads(q)
+    # result["data"] = q["data"]
+    # 
+    # mock data
+    start_year = request.args.get('start_year')
+    end_year = request.args.get('end_year')
+    if not start_year:
+        start_year = 2015
+    if not end_year:
+        end_year = 2017
+    
+    result = {}
+    result["data"] = {
+        # driverID
+        2:{
+            "forename": "Nick",
+            "surname": "Heidfeld",
+            "data":[
+                {
+                    "year":2015,
+                    "point":30,
+                    "crash":3
+                },
+                {
+                    "year":2016,
+                    "point":40,
+                    "crash":1
+                },
+                {
+                    "year":2017,
+                    "point":45,
+                    "crash":2
+                }
+            ]
+        }
+    }
+
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
     app.register_blueprint(c1_bp, url_prefix='/c1')
     app.register_blueprint(c2_bp, url_prefix='/c2')
+    app.register_blueprint(c4_bp, url_prefix='/c4')
     app.run(host='0.0.0.0', port=8000, debug=True)
