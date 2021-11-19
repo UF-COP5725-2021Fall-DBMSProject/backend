@@ -122,7 +122,6 @@ def c1_b(id):
     result["data"] = {
         "lewis": lewis,
         "another": another,
-        "another_id": id
     }
     response = jsonify({"result":result})
     if app.debug:
