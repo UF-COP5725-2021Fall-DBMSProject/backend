@@ -145,17 +145,19 @@ def c1_b(id):
 @c1_bp.route('/funcC/<int:id>')
 def c1_c(id):
     #TODO
-    # q = c1Funcs.c1_function_c(id)
+    q1,q2 = c1Funcs.c1_function_c(id)
+    # result = {}
+    q1 = json.loads(q1)
+    return jsonify(q1)
+    # result["data"] = {
 
-    result = {}
-    # q = json.loads(q)
-    # result["data"] = q["data"]
-    # [Important] Let web are able to hit the domain 'localhost'
-    response = jsonify({"result":result})
-    if app.debug:
-        # [Important] Let web are able to hit the domain 'localhost'
-        response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    # }
+    # # [Important] Let web are able to hit the domain 'localhost'
+    # response = jsonify({"result":result})
+    # if app.debug:
+    #     # [Important] Let web are able to hit the domain 'localhost'
+    #     response.headers.add('Access-Control-Allow-Origin', '*')
+    # return response
 
 
 ### C2 API ###
