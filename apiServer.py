@@ -108,13 +108,13 @@ def c1_a(id):
 @c1_bp.route('/funcB/<int:id>')
 def c1_b(id):
     # return _getData('./hy.json')
-    q = c1Funcs.c1_function_b(id)
+    q1,q2 = c1Funcs.c1_function_b(id)
     result = {}
-    q = json.loads(q)
+    q1 = json.loads(q1)
     lewis = [0,0,0]
     another = [0,0,0]
 
-    for d in q["data"]:
+    for d in q1["data"]:
         lewis[d["year"]-1] = d["lewis_score"]
         another[d["year"]-1] = d["others_score"]
         l_surname = d["lewis_surname"]
