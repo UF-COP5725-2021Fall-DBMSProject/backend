@@ -112,8 +112,18 @@ def c1_b(id):
 
     result = {}
     q = json.loads(q)
-    result["data"] = q["data"]
+    lewis = [0,0,0]
+    another = [0,0,0]
     
+    for d in q["data"]:
+        lewis[d["year"]-1] = d["lewis_score"]
+        another[d["year"]-1] = d["others_score"]
+
+    result["data"] = {
+        "lewis": lewis,
+        "another": another,
+        "another_id": id
+    }
     response = jsonify({"result":result})
     if app.debug:
         # [Important] Let web are able to hit the domain 'localhost'
