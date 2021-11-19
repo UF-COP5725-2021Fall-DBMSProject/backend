@@ -129,12 +129,18 @@ def c1_function_b(driverId, query_engine=engine):
     return json_all_result
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # json_all_result = c1_function_b(2)
 # print(json_all_result)
 =======
 json_all_result = c1_function_b(2)
 #print(json_all_result)
 >>>>>>> update c1_function, todo:choose most competitive d
+=======
+
+# json_all_result = c1_function_b(2)
+# print(json_all_result)
+>>>>>>> change c1b return structure
 
 def c1_function_c(driverId, query_engine=engine):
     query = '''
@@ -186,6 +192,7 @@ def c1_function_c(driverId, query_engine=engine):
 
 # compare_in_each_lap, compare_avg_laps_time = c1_function_c(2)
 # print(compare_in_each_lap, compare_avg_laps_time)
+
 
 
 
