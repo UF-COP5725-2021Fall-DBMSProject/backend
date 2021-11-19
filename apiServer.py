@@ -146,18 +146,15 @@ def c1_b(id):
 def c1_c(id):
     #TODO
     q1,q2 = c1Funcs.c1_function_c(id)
-    # result = {}
+    result = {}
     q1 = json.loads(q1)
-    return jsonify(q1)
-    # result["data"] = {
-
-    # }
-    # # [Important] Let web are able to hit the domain 'localhost'
-    # response = jsonify({"result":result})
-    # if app.debug:
-    #     # [Important] Let web are able to hit the domain 'localhost'
-    #     response.headers.add('Access-Control-Allow-Origin', '*')
-    # return response
+    result["data"] = q1["data"]
+    # [Important] Let web are able to hit the domain 'localhost'
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 ### C2 API ###
