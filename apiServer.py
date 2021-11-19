@@ -216,8 +216,55 @@ def c2_get_investable_constructors():
     return response
 
 
+
+### C3 API ###
+@c3_bp.route('/funcA')
+def c3a():
+    
+    result = {}
+    result["data"] = {
+        999:{
+            "forname": "Nick",
+            "surname": "Young",
+            "data":[
+                {
+                    "year":2019,
+                    "race_name":"some race",
+                    "race_id":9527,
+                    "rival_id":487,
+                    "rival_forname":"Ryan",
+                    "rival_surname":"Kelly",
+                    "success_defense_laps":[
+                        {
+                            "lap":5,
+                            "position":6,
+                            "rival_position":7
+                        },
+                        {
+                            "lap":6,
+                            "position":6,
+                            "rival_position":7
+                        },
+                        {
+                            "lap":7,
+                            "position":6,
+                            "rival_position":7
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response    
+
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
     app.register_blueprint(c1_bp, url_prefix='/c1')
     app.register_blueprint(c2_bp, url_prefix='/c2')
+    app.register_blueprint(c3_bp, url_prefix='/c3')
     app.run(host='0.0.0.0', port=8000, debug=True)
