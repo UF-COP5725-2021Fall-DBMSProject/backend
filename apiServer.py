@@ -133,6 +133,7 @@ def c1_b(id):
         }
     ]
         
+
     response = jsonify({"result":result})
     if app.debug:
         # [Important] Let web are able to hit the domain 'localhost'
