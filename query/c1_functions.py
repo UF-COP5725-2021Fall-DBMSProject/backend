@@ -117,7 +117,7 @@ def c1_function_b(driverId, query_engine=engine):
             )
             SELECT rank AS year,
                     l.forename as Lewis_forename,l.surname as Lewis_surname, l.points AS Lewis_score,
-                    a.forename as Others_forename, a.surname as Others_surname, a.points AS Others_score ,
+                    a.forename as Others_forename, a.surname as Others_surname, a.points AS Others_score
             FROM L_first_3_year_races l
             INNER JOIN A_first_3_year_races a USING (rank)
             ORDER BY rank ASC
