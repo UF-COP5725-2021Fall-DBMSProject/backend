@@ -10,7 +10,7 @@ pwd = sys.argv[1]
 import pandas as pd
 from sqlalchemy import create_engine
 
-from . import engine as eg
+import engine as eg
 
 engine = eg.engine_gen(pwd)
 
@@ -68,25 +68,29 @@ compare_in_each_race, compare_all_same_race = c1_function_a(2)
 
 def c1_function_b(driverId, query_engine=engine):
     query = '''
-             WITH L_first_3_year_races(points, rank) AS(
-                SELECT sum(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
+             WITH L_first_3_year_races(forename, surname, points, rank) AS(
+                SELECT forename, surname, sum(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
                 FROM results r
                 INNER JOIN races ra USING (raceId)
-                WHERE r.driverId = 1
-                GROUP BY ra.year
+                INNER JOIN drivers d USING (driverId)
+                WHERE driverId = 1
+                GROUP BY ra.year, forename, surname
                 ORDER BY ra.year ASC
                 FETCH FIRST 3 ROW ONLY
             ),
-            A_first_3_year_races(points, rank) AS(
-                SELECT sum(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
+            A_first_3_year_races(forename, surname, points, rank) AS(
+                SELECT forename, surname, sum(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
                 FROM results r
                 INNER JOIN races ra USING (raceId)
-                WHERE r.driverId = {}
-                GROUP BY ra.year
+                INNER JOIN drivers d USING (driverId)
+                WHERE driverId = {}
+                GROUP BY ra.year, forename, surname
                 ORDER BY ra.year ASC
                 FETCH FIRST 3 ROW ONLY
             )
-            SELECT rank AS year, l.points AS Lewis_score, a.points AS Others_score 
+            SELECT rank AS year,
+                    l.forename as Lewis_forename,l.surname as Lewis_surname, l.points AS Lewis_score,
+                    a.forename as Others_forename, a.surname as Others_surname, a.points AS Others_score 
             FROM L_first_3_year_races l
             INNER JOIN A_first_3_year_races a USING (rank)
             ORDER BY rank ASC
