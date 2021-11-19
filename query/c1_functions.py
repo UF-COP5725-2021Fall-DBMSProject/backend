@@ -65,7 +65,6 @@ compare_in_each_race, compare_all_same_race = c1_function_a(2)
 #print(compare_in_each_race)
 #print(compare_all_same_race)
 
-
 def c1_function_b(driverId, query_engine=engine):
     query = '''
              WITH L_first_3_year_races(forename, surname, points, rank) AS(
@@ -101,6 +100,55 @@ def c1_function_b(driverId, query_engine=engine):
 
 json_all_result = c1_function_b(2)
 print(json_all_result)
+
+def c1_function_c(driverId, query_engine=engine):
+    query = '''
+            WITH L_laps(raceId, lap, forename, surname, milliseconds) AS(
+                SELECT l.raceId, l.lap, d.forename, d.surname, milliseconds
+                FROM lapTimes l
+                INNER JOIN drivers d ON l.driverId=d.driverID
+                WHERE d.driverId = 1
+            )
+            SELECT ra.year, ra.raceId, ra.name, l.lap,
+            d.forename as someone_forename, d.surname as someone_surname, l.milliseconds as someone_lap_time, 
+            ll.forename as Lewis_forename, ll.surname as someone_surname, ll.milliseconds as L_point
+            FROM DRIVERS d 
+            INNER JOIN lapTimes l ON d.driverId=l.driverID
+            INNER JOIN races ra ON l.raceId = ra.raceId
+            INNER JOIN L_laps ll ON ll.raceId = l.raceId AND LL.lap=l.lap
+            WHERE d.driverId = {}'''.format(driverId) 
+    data = pd.read_sql(query, query_engine)
+    compare_in_each_lap = data.to_json(orient="table")
+
+    query = '''
+            WITH L_laps(raceId, lap, forename, surname, milliseconds) AS(
+                SELECT l.raceId, l.lap, d.forename, d.surname, milliseconds
+                FROM lapTimes l
+                INNER JOIN drivers d ON l.driverId=d.driverID
+                WHERE d.driverId = 1
+            )
+            SELECT d.forename as someone_forename, d.surname as someone_surname,
+                   sum(l.milliseconds)/count(l.lap) as someone_avg_lap_time_milliseconds, 
+                   ll.forename as Lewis_forename, ll.surname as Lewis_surname,
+                   sum(ll.milliseconds)/count(ll.lap) as L_avg_lap_time_milliseconds, 
+                   sum(l.milliseconds)/sum(ll.milliseconds) as likes
+            FROM DRIVERS d 
+            INNER JOIN lapTimes l ON d.driverId=l.driverID
+            INNER JOIN races ra ON l.raceId = ra.raceId
+            INNER JOIN L_laps ll ON ll.raceId = l.raceId AND LL.lap=l.lap
+            WHERE d.driverId = {}
+            GROUP BY d.driverID, d.forename, d.surname,ll.forename,ll.surname
+            '''.format(driverId) 
+
+    data = pd.read_sql(query, query_engine)
+    compare_avg_laps_time = data.to_json(orient="table")
+
+    return compare_in_each_lap, compare_avg_laps_time
+
+compare_in_each_lap, compare_avg_laps_time = c1_function_c(2)
+print(compare_in_each_lap, compare_avg_laps_time)
+
+
 
 #TODO
 # def c1_function_c(driverId, query_engine=engine):
