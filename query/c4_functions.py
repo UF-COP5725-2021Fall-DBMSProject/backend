@@ -12,7 +12,7 @@ import engine as eg
 
 engine = eg.engine_gen(pwd)
 
-def c3_function_get_top_10_risky_drivers(query_engine=engine):
+def c4_function_get_top_10_risky_drivers(query_engine=engine):
 
     query = '''
             WITH driver_points(driverId, year, all_points) AS(
@@ -47,9 +47,9 @@ def c3_function_get_top_10_risky_drivers(query_engine=engine):
 
     return top_ten_risky_drivers
 
-top_ten_risky_drivers = c3_function_get_top_10_risky_drivers()
+top_ten_risky_drivers = c4_function_get_top_10_risky_drivers()
 
-def c3_function_a(driverId,query_engine=engine):
+def c4_function_a(driverId,query_engine=engine):
     query = '''
             WITH driver_points(driverId, year, all_points) AS(
                 SELECT d.driverId, ra.year, SUM(re.points)
@@ -80,7 +80,7 @@ def c3_function_a(driverId,query_engine=engine):
 
     return detail_record_of_any_risky_drivers
 
-detail_record_of_any_risky_drivers = c3_function_a(2)
+detail_record_of_any_risky_drivers = c4_function_a(2)
 print(detail_record_of_any_risky_drivers)
 
 
