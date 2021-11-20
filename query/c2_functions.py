@@ -42,8 +42,8 @@ def c2_function(start_year, end_year, query_engine=engine):
                 FROM ConstructorBudget b
                 WHERE b.year BETWEEN {sy} AND {ey}
             )
-            SELECT ConstructorId, year, c.name, cap.avg_pits as avg_pits,
-                    ctp.totlal_point as totlal_point,
+            SELECT ConstructorId as constructor_id, year, c.name, cap.avg_pits as avg_pits_time,
+                    ctp.totlal_point as total_points,
                     cte.errors as errors,
                     cb.budgets as budgets
             FROM Constructors c 
@@ -66,7 +66,7 @@ def c2_function(start_year, end_year, query_engine=engine):
                 FROM ConstructorBudget b
                 WHERE b.year = {ey}
             )
-            SELECT distinct b1.constructorId, b1.name, 
+            SELECT distinct b1.constructorId as constructor_id, b1.name, 
             b1.budgets as First_year_budget,
             b2.budgets as Last_year_budget,
             b2.budgets/b1.budgets as increase_percent
@@ -91,7 +91,7 @@ def c2_function(start_year, end_year, query_engine=engine):
                 SELECT AVG(avg_pits)
                 FROM Cons_avg_pits
             )
-            SELECT distinct constructorId, name, avg_pits
+            SELECT distinct constructorId as constructor_id, name, avg_pits
             FROM Cons_avg_pits
             WHERE avg_pits <= (SELECT * FROM all_avg_pits)
             ORDER BY avg_pits ASC
@@ -114,7 +114,7 @@ def c2_function(start_year, end_year, query_engine=engine):
                 SELECT AVG(errors)
                 FROM Cons_total_errors
             )
-            SELECT distinct ConstructorId, name, errors
+            SELECT distinct ConstructorId as constructor_id, name, errors
             FROM Cons_total_errors
             WHERE errors <= (SELECT * FROM all_avg_errors)
             ORDER BY errors ASC
