@@ -12,7 +12,7 @@ import engine as eg
 
 engine = eg.engine_gen(pwd)
 
-def c4_function_get_top_10_risky_drivers(query_engine=engine):
+def c4_function_get_top_10_aggresive_drivers(query_engine=engine):
 
     query = '''
             WITH driver_points(driverId, year, all_points) AS(
@@ -43,11 +43,11 @@ def c4_function_get_top_10_risky_drivers(query_engine=engine):
             FETCH First 10 ROWS ONLY
             '''
     data = pd.read_sql(query, query_engine)
-    top_ten_risky_drivers = data.to_json(orient="table")
+    top_ten_aggresive_drivers = data.to_json(orient="table")
 
-    return top_ten_risky_drivers
-
-top_ten_risky_drivers = c4_function_get_top_10_risky_drivers()
+    return top_ten_aggresive_drivers
+    
+top_ten_aggresive_drivers = c4_function_get_top_10_risky_drivers()
 
 def c4_function_a(driverId,query_engine=engine):
     query = '''
