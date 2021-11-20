@@ -194,7 +194,7 @@ def c2_get_investable_constructors():
 
     # print(final_rank)
 
-    needed_attributes = {"budgets","avg_pits_time","constructor_id","name","total_points"}
+    needed_attributes = {"budgets","avg_pits_time","constructor_id","errors","name","total_points"}
     constructors = []
     for d in final_rank:
         constructor = {}
