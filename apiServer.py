@@ -4,6 +4,7 @@ from flask import Blueprint
 from flask import request
 from werkzeug.wrappers import response
 import query.c1_functions as c1Funcs
+import query.c4_functions as c4Funcs
 
 # testing
 import json
@@ -217,48 +218,35 @@ def c2_get_investable_constructors():
 
 
 ### C4 API ###
-@c4_bp.route('/funcA/<int:id>')
-def c4_a(id):
-    # q = c4Funcs.c4_function_b(id)
+@c4_bp.route('/aggressive_drivers')
+def c4_get_aggressive_driver():
+    # q = c4Funcs.c4_function_get_top_10_risky_drivers()
 
-    # result = {}
     # q = json.loads(q)
-    # result["data"] = q["data"]
-    # 
-    # mock data
-    start_year = request.args.get('start_year')
-    end_year = request.args.get('end_year')
-    if not start_year:
-        start_year = 2015
-    if not end_year:
-        end_year = 2017
-    
     result = {}
-    result["data"] = {
-        # driverID
-        2:{
-            "forename": "Nick",
-            "surname": "Heidfeld",
-            "data":[
-                {
-                    "year":2015,
-                    "point":30,
-                    "crash":3
-                },
-                {
-                    "year":2016,
-                    "point":40,
-                    "crash":1
-                },
-                {
-                    "year":2017,
-                    "point":45,
-                    "crash":2
-                }
-            ]
-        }
+    result["data"] = {}
+    result["data"]["useless"] = {
+        "name" : ["Jim","Ryan"],
+        "driver_id" : [888,777],
+        "points" : [0,0],
+        "crashes" : [20,20],
+        "ratio" : [0,0]
     }
-
+    result["data"]["risky"] = {
+        "name" : ["YM","Anmol"],
+        "driver_id" : [888,777],
+        "points" : [100,100],
+        "crashes" : [1,2],
+        "ratio" : [0.01,0.02]
+    }
+    result["data"]["aggressive"] = {
+        "name" : ["Jim","Ryan"],
+        "driver_id" : [888,777],
+        "points" : [20,20],
+        "crashes" : [2,4],
+        "ratio" : [10,5]
+    }
+    
     response = jsonify({"result":result})
     if app.debug:
         # [Important] Let web are able to hit the domain 'localhost'
@@ -270,4 +258,5 @@ if __name__ == '__main__':
     app.register_blueprint(c1_bp, url_prefix='/c1')
     app.register_blueprint(c2_bp, url_prefix='/c2')
     app.register_blueprint(c4_bp, url_prefix='/c4')
+
     app.run(host='0.0.0.0', port=8000, debug=True)

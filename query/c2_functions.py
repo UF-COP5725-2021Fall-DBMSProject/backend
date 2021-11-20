@@ -8,7 +8,8 @@ pwd = sys.argv[1]
 import pandas as pd
 from sqlalchemy import create_engine
 
-import engine as eg
+
+from . import engine as eg
 
 engine = eg.engine_gen(pwd)
 
