@@ -219,6 +219,35 @@ def c2_get_investable_constructors():
 
 
 ### C4 API ###
+@c4_bp.route('/funcA/<int:id>')
+def c4a(id):
+    q = c4Funcs.c4_function_a(id)
+    q = json.loads(q)
+
+    data = {
+        "name" : "",
+        "driver_id" : 0,
+        "year" : [],
+        "points" : [],
+        "crash" : []   
+    }
+    data["name"] = q["data"][0]["forename"] + " " + q["data"][0]["surname"]
+    data["driver_id"] = q["data"][0]["driverid"]
+
+    other_attr = {"year","points","crash"}
+    for d in q["data"]:
+        for attr in other_attr:
+            data[attr].append(d[attr])
+
+    result = {}
+    result["data"] = data
+
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 @c4_bp.route('/crashing-driver-lists')
 def c4_get_aggressive_driver():
     useless, risky, aggressive = c4Funcs.c4_function_get_useless_risky_aggresive_drivers_list()
