@@ -188,7 +188,6 @@ defender_best_10_records = c3_function_get_defender_best_10_records(defender_dri
 #print(defender_best_10_records)
 
 def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_driverId, teammate_driverId, query_engine=engine):
-
     query = '''
             WITH Race_lap(raceId, lap, driverId, position) AS(
                 SELECT raceId, lap, driverId, position
@@ -201,7 +200,7 @@ def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_dri
                                           r2.driverId, r2.position,
                                           r3.driverId, r3.position
                 FROM Race_lap r1, Race_lap r2, Race_lap r3
-                WHERE r1.driverId={df.did}
+                WHERE r1.driverId={df_did}
                 AND r2.driverId={vt_did}
                 AND r3.driverId={tm_did}
                 AND r1.lap=r2.lap
@@ -217,16 +216,18 @@ def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_dri
             INNER JOIN drivers vic ON r.victim_driverId=vic.driverId
             INNER JOIN drivers tmt ON r.teammate_driverId=tmt.driverId
             INNER JOIN races ra ON r.raceId=ra.raceId
-            
             '''.format(rid=raceId, df_did=defender_driverId,vt_did=victim_driverId, tm_did=teammate_driverId)
     data = pd.read_sql(query, query_engine)
-    defender_best_10_records = data.to_json(orient="table")
+    defender_victim_teammate_record_detail = data.to_json(orient="table")
 
-    return defender_best_10_records
+    return defender_victim_teammate_record_detail
 
-defender_driverId=2
-defender_best_10_records = c3_function_get_defender_best_10_records(defender_driverId)
-#print(defender_best_10_records)
+raceId = 348
+defender_driverId = 13
+victim_driverId = 808
+teammate_driverId = 4
+defender_victim_teammate_record_detail = c3_function_get_defender_record_detail(raceId, defender_driverId,victim_driverId,teammate_driverId)
+#print(defender_victim_teammate_record_detail)
 
 
 # https://www.oracletutorial.com/python-oracle/connecting-to-oracle-database-in-python/
