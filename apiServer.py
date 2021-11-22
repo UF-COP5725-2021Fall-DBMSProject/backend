@@ -109,12 +109,32 @@ def c1_a(id):
 @c1_bp.route('/funcB/<int:id>')
 def c1_b(id):
     # return _getData('./hy.json')
-    q = c1Funcs.c1_function_b(id)
-
+    q1,q2 = c1Funcs.c1_function_b(id)
     result = {}
-    q = json.loads(q)
-    result["data"] = q["data"]
-    
+    q1 = json.loads(q1)
+    lewis = [0,0,0]
+    another = [0,0,0]
+
+    for d in q1["data"]:
+        lewis[d["year"]-1] = d["lewis_score"]
+        another[d["year"]-1] = d["others_score"]
+        l_surname = d["lewis_surname"]
+        l_forename = d["lewis_forename"]
+        a_surname = d["others_surname"]
+        a_forename = d["others_forename"]
+
+    result["data"] = [
+        {
+            "name":l_forename + " " + l_surname,
+            "score": lewis
+        },
+        {
+            "name":a_forename + " " + a_surname,
+            "score":another
+        }
+    ]
+        
+
     response = jsonify({"result":result})
     if app.debug:
         # [Important] Let web are able to hit the domain 'localhost'
@@ -126,11 +146,10 @@ def c1_b(id):
 @c1_bp.route('/funcC/<int:id>')
 def c1_c(id):
     #TODO
-    # q = c1Funcs.c1_function_c(id)
-
+    q1,q2 = c1Funcs.c1_function_c(id)
     result = {}
-    # q = json.loads(q)
-    # result["data"] = q["data"]
+    q1 = json.loads(q1)
+    result["data"] = q1["data"]
     # [Important] Let web are able to hit the domain 'localhost'
     response = jsonify({"result":result})
     if app.debug:

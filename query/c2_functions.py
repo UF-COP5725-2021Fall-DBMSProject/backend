@@ -42,8 +42,8 @@ def c2_function(start_year, end_year, query_engine=engine):
                 FROM ConstructorBudget b
                 WHERE b.year BETWEEN {sy} AND {ey}
             )
-            SELECT ConstructorId as constructor_id, year, c.name, cap.avg_pits as avg_pits_time,
-                    ctp.totlal_point as total_points,
+            SELECT ConstructorId, year, c.name, cap.avg_pits as avg_pits,
+                    ctp.totlal_point as totlal_point,
                     cte.errors as errors,
                     cb.budgets as budgets
             FROM Constructors c 
