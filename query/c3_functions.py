@@ -82,9 +82,11 @@ def c3_function_get_top_10_defender_for_teammate(query_engine=engine):
                     AND c5.victim_position-c5.defender_position BETWEEN 1 AND 2)
                 ORDER BY c1.raceId, c1.lap, c1.defender_driverId, c1.victim_driverId ASC
             )
-            SELECT defender_driverId, COUNT(startlap) as defend_point
+            SELECT defender_driverId, d.forename as defender_forename, d.surname as defender_surname, 
+                    COUNT(startlap) as defend_point
             FROM defender_records dr
-            GROUP BY defender_driverId
+            INNER JOIN drivers d ON dr.defender_driverId=d.driverId
+            GROUP BY defender_driverId, d.forename, d.surname
             ORDER BY COUNT(startlap) DESC
             FETCH FIRST 10 ROWS ONLY
             '''
@@ -94,8 +96,6 @@ def c3_function_get_top_10_defender_for_teammate(query_engine=engine):
     return top_10_defender_for_teammate
 
 top_10_defender_for_teammate = c3_function_get_top_10_defender_for_teammate()
-
-
 
 def c3_function_get_defender_best_10_records(defender_driverId, query_engine=engine):
 
@@ -172,10 +172,18 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
                 AND c5.victim_position-c5.defender_position BETWEEN 1 AND 2)
             ORDER BY c1.raceId, c1.lap, c1.defender_driverId, c1.victim_driverId ASC
             )
-            SELECT raceId, defender_driverId, victim_driverId,teammate_driverId, COUNT(start_lap) as defend_points
-            FROM defend_record
-            GROUP BY raceId, defender_driverId, victim_driverId,teammate_driverId
-            ORDER BY COUNT(start_lap) DESC
+            SELECT r.year, dr.raceId, r.name as race_name, dr.defender_driverId, def.forename as defender_forename, def.surname as defender_surname,
+                                            dr.victim_driverId, vic.forename as victim_forename, vic.surname as victim_surname,
+                                            dr.teammate_driverId, tea.forename as teammate_forename, tea.surname as teammate_furname,
+                                            COUNT(dr.start_lap) as defend_points
+            FROM defend_record dr
+            INNER JOIN races r ON r.raceId=dr.raceId 
+            INNER JOIN drivers def ON def.driverId = dr.defender_driverId
+            INNER JOIN drivers vic ON vic.driverId = dr.victim_driverId
+            INNER JOIN drivers tea ON tea.driverId = dr.teammate_driverId
+            GROUP BY r.year, dr.raceId, r.name, dr.defender_driverId, def.forename,def.surname,dr.victim_driverId,
+                        vic.forename,vic.surname,dr.teammate_driverId, tea.forename,tea.surname
+            ORDER BY COUNT(dr.start_lap) DESC
             FETCH FIRST 10 ROWS ONLY
             '''.format(df_did=defender_driverId)
     data = pd.read_sql(query, query_engine)
@@ -207,7 +215,7 @@ def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_dri
                 AND r1.lap=r3.lap
                 ORDER BY r1.lap
             )
-            SELECT r.raceId as raceId, ra.name as race_name, 
+            SELECT ra.year, r.raceId as raceId, ra.name as race_name, 
                    def.driverId as defender_driverId, def.forename as defender_forename, def.surname as defender_surname, r.defender_position as defender_position,
                    vic.driverId as victim_driverId, vic.forename  as victim_forename, vic.surname as victim_surname, r.victim_position as victim_position,
                    tmt.driverId as teammate_driverId, tmt.forename as teammmate_forename, tmt.surname as teammate_surname, r.teammate_position as teammate_position
