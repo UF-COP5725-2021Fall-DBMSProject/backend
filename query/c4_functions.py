@@ -155,9 +155,11 @@ def c4_function_a(driverId,query_engine=engine):
     return detail_record_of_any_risky_drivers
 
 detail_record_of_any_risky_drivers = c4_function_a(2)
+
 #print(detail_record_of_any_risky_drivers)
 
 
 # https://www.oracletutorial.com/python-oracle/connecting-to-oracle-database-in-python/
 # https://oracle.github.io/python-cx_Oracle/
+
 # https://stackoverflow.com/questions/55823744/how-to-fix-cx-oracle-databaseerror-dpi-1047-cannot-locate-a-64-bit-oracle-cli
