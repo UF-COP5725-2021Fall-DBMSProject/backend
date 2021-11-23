@@ -86,7 +86,7 @@ def c1_function_get_competitive_drivers(query_engine=engine):
     return Best_10_driver_who_like_lewis
 
 Best_10_driver_who_like_lewis = c1_function_get_competitive_drivers()
-#print(Best_10_driver_who_like_lewis)
+print(Best_10_driver_who_like_lewis)
 
 def c1_function_a(driverId,query_engine=engine):
 
