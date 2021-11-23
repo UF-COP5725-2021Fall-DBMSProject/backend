@@ -106,7 +106,8 @@ def c1_function_a(driverId,query_engine=engine):
             INNER JOIN results r ON d.driverId=r.driverID
             INNER JOIN races ra ON r.raceId = ra.raceId
             INNER JOIN L_races lr ON lr.raceId = ra.raceId
-            WHERE d.driverId = {} AND r.points<>0'''.format(driverId) 
+            WHERE d.driverId = {} AND r.points<>0
+            ORDER BY ra.year ASC, ra.raceId ASC'''.format(driverId)
 
     data = pd.read_sql(query, query_engine)
     json_all_result = data.to_json(orient="table")

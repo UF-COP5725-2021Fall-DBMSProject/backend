@@ -5,6 +5,7 @@ from flask import request
 from werkzeug.wrappers import response
 import query.c1_functions as c1Funcs
 import query.c2_functions as c2Funcs
+import query.c3_functions as c3Funcs
 import query.c4_functions as c4Funcs
 import copy
 

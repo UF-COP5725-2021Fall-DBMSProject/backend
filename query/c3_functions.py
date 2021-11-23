@@ -8,7 +8,7 @@ pwd = sys.argv[1]
 import pandas as pd
 from sqlalchemy import create_engine
 
-import engine as eg
+from . import engine as eg
 
 engine = eg.engine_gen(pwd)
 
@@ -185,7 +185,7 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
 
 defender_driverId=13
 defender_best_10_records = c3_function_get_defender_best_10_records(defender_driverId)
-#print(defender_best_10_records)
+print(defender_best_10_records)
 
 def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_driverId, teammate_driverId, query_engine=engine):
     query = '''
