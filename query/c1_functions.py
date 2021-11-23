@@ -73,7 +73,7 @@ def c1_function_get_competitive_drivers(query_engine=engine):
                 ORDER BY similarity DESC
                 --FETCH FIRST 10 ROWS ONLY
             )
-            SELECT driverId,d.forename, d.surname, (a.similarity+b.similarity+c.similarity)/3 as total_similarity_with_lowis
+            SELECT driverId,d.forename, d.surname, (a.similarity+b.similarity+c.similarity)/3 as total_similarity_with_lewis
             FROM someone_performance_compare_with_lewis_when_playing_in_same_game a
             INNER JOIN first_3_year_similarity b USING (driverId)
             INNER JOIN someone_duration_compare_with_lewis_when_playing_in_same_lap c USING (driverId)
