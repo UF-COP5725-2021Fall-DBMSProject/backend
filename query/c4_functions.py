@@ -29,7 +29,6 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
                 INNER JOIN races ra ON re.raceId=ra.raceId
                 WHERE statusId BETWEEN 3 and 4
                 GROUP BY d.driverId, ra.year
-
                 HAVING COUNT(re.statusId)>3
                 ORDER BY d.driverId, ra.year
             ), driver_point_and_error_each_year(driverId, year, points, crash) AS (
@@ -115,18 +114,11 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
             FETCH First 10 ROWS ONLY
             '''
     data = pd.read_sql(query, query_engine)
-    top_ten_risky_drivers = data.to_json(orient="table")
+    top_ten_aggresive_drivers = data.to_json(orient="table")
 
-
-<<<<<<< HEAD
-    return top_ten_risky_drivers
-
-top_ten_risky_drivers = c4_function_get_top_10_risky_drivers()
-=======
     return useless_drivers,top_ten_risky_drivers, top_ten_aggresive_drivers
 
 useless_drivers,top_ten_risky_drivers, top_ten_aggresive_drivers = c4_function_get_useless_risky_aggresive_drivers_list()
->>>>>>> cab04a2 (update c4 - add function which return three list)
 
 def c4_function_a(driverId,query_engine=engine):
     query = '''
@@ -163,14 +155,8 @@ def c4_function_a(driverId,query_engine=engine):
     return detail_record_of_any_risky_drivers
 
 detail_record_of_any_risky_drivers = c4_function_a(2)
-
-<<<<<<< HEAD
-# print(detail_record_of_any_risky_drivers)
-print(top_ten_risky_drivers)
-=======
 #print(detail_record_of_any_risky_drivers)
 
->>>>>>> cab04a2 (update c4 - add function which return three list)
 
 # https://www.oracletutorial.com/python-oracle/connecting-to-oracle-database-in-python/
 # https://oracle.github.io/python-cx_Oracle/
