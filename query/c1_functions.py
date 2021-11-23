@@ -73,6 +73,7 @@ def c1_function_get_competitive_drivers(query_engine=engine):
                 ORDER BY similarity DESC
                 --FETCH FIRST 10 ROWS ONLY
             )
+
             SELECT driverId,d.forename, d.surname, (a.similarity+b.similarity+c.similarity)/3 as total_similarity_with_lewis
             FROM someone_performance_compare_with_lewis_when_playing_in_same_game a
             INNER JOIN first_3_year_similarity b USING (driverId)
@@ -86,7 +87,9 @@ def c1_function_get_competitive_drivers(query_engine=engine):
     return Best_10_driver_who_like_lewis
 
 Best_10_driver_who_like_lewis = c1_function_get_competitive_drivers()
-print(Best_10_driver_who_like_lewis)
+
+#print(Best_10_driver_who_like_lewis)
+
 
 def c1_function_a(driverId,query_engine=engine):
 
@@ -195,21 +198,8 @@ def c1_function_b(driverId, query_engine=engine):
     data = pd.read_sql(query, query_engine)
     similarity_of_first_three_years = data.to_json(orient="table")
 
+
     return compare_first_three_years, similarity_of_first_three_years
-
-# <<<<<<< HEAD
-# <<<<<<< HEAD
-# # json_all_result = c1_function_b(2)
-# # print(json_all_result)
-# =======
-# json_all_result = c1_function_b(2)
-# #print(json_all_result)
-# >>>>>>> update c1_function, todo:choose most competitive d
-# =======
-
-# # json_all_result = c1_function_b(2)
-# # print(json_all_result)
-# >>>>>>> change c1b return structure
 
 
 def c1_function_c(driverId, query_engine=engine):
@@ -259,9 +249,9 @@ def c1_function_c(driverId, query_engine=engine):
 
     return compare_in_each_lap, compare_avg_laps_time
 
+
 # compare_in_each_lap, compare_avg_laps_time = c1_function_c(2)
 # print(compare_in_each_lap, compare_avg_laps_time)
-
 
 
 

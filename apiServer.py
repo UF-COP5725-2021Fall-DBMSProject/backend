@@ -5,6 +5,11 @@ from flask import request
 from werkzeug.wrappers import response
 import query.c1_functions as c1Funcs
 import query.c2_functions as c2Funcs
+import query.c4_functions as c4Funcs
+import copy
+
+
+
 
 # testing
 import json
@@ -104,8 +109,8 @@ def c1_a(id):
     for d in q1["schema"]["fields"]:
         if d["name"] != "index":
             columns.append(d["name"])
-    for d in q1["data"]:
-        del d["index"]
+    # for d in q1["data"]:
+    #     del d["index"]
 
     # print(type(q1))
     # return jsonify(q1)
@@ -306,8 +311,116 @@ def c2_get_investable_constructors():
     return response
 
 
+### C4 API ###
+@c4_bp.route('/funcA/<int:id>')
+def c4a(id):
+    q = c4Funcs.c4_function_a(id)
+    q = json.loads(q)
+
+    data = {
+        "name" : "",
+        "driver_id" : 0,
+        "year" : [],
+        "points" : [],
+        "crash" : []   
+    }
+    data["name"] = q["data"][0]["forename"] + " " + q["data"][0]["surname"]
+    data["driver_id"] = q["data"][0]["driverid"]
+
+    other_attr = {"year","points","crash"}
+    for d in q["data"]:
+        for attr in other_attr:
+            data[attr].append(d[attr])
+
+    result = {}
+    result["data"] = data
+
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@c4_bp.route('/crashing-driver-lists')
+def c4_get_aggressive_driver():
+    useless, risky, aggressive = c4Funcs.c4_function_get_useless_risky_aggresive_drivers_list()
+
+    useless = json.loads(useless)
+    risky = json.loads(risky)
+    aggressive = json.loads(aggressive)
+
+
+    list_template = {
+        "name" : [],
+        "driver_id" : [],
+        "points" : [],
+        "crashes" : [],
+        "ratio" : []
+    }
+
+    result = {}
+    result["data"] = {}
+    result["data"]["useless"] = copy.deepcopy(list_template)
+    result["data"]["risky"] = copy.deepcopy(list_template)
+    result["data"]["aggressive"] = copy.deepcopy(list_template)
+
+    for d in useless["data"]:
+        result["data"]["useless"]["name"].append(d["forename"] + " " + d["surname"])
+        result["data"]["useless"]["driver_id"].append(d["driverid"])
+        result["data"]["useless"]["points"].append(d["total_point"])
+        result["data"]["useless"]["crashes"].append(d["total_crash"])
+        result["data"]["useless"]["ratio"].append(d["total_point"]/d["total_crash"])
+
+    for d in risky["data"]:
+        result["data"]["risky"]["name"].append(d["forename"] + " " + d["surname"])
+        result["data"]["risky"]["driver_id"].append(d["driverid"])
+        result["data"]["risky"]["points"].append(d["total_point"])
+        result["data"]["risky"]["crashes"].append(d["total_crash"])
+        result["data"]["risky"]["ratio"].append(d["crash_devide_by_point"])
+
+    for d in aggressive["data"]:
+        result["data"]["aggressive"]["name"].append(d["forename"] + " " + d["surname"])
+        result["data"]["aggressive"]["driver_id"].append(d["driverid"])
+        result["data"]["aggressive"]["points"].append(d["total_point"])
+        result["data"]["aggressive"]["crashes"].append(d["total_crash"])
+        result["data"]["aggressive"]["ratio"].append(d["point_devide_by_crash"])
+
+    # result["data"]["useless"] = useless["data"]
+    # result["data"]["risky"] = risky["data"]
+    # result["data"]["aggressive"] = aggressive["data"]
+
+    # result["data"]["useless"] = {
+    #     "name" : ["Jim","Ryan"],
+    #     "driver_id" : [888,777],
+    #     "points" : [0,0],
+    #     "crashes" : [20,20],
+    #     "ratio" : [0,0]
+    # }
+    # result["data"]["risky"] = {
+    #     "name" : ["YM","Anmol"],
+    #     "driver_id" : [888,777],
+    #     "points" : [100,100],
+    #     "crashes" : [1,2],
+    #     "ratio" : [0.01,0.02]
+    # }
+    # result["data"]["aggressive"] = {
+    #     "name" : ["Jim","Ryan"],
+    #     "driver_id" : [888,777],
+    #     "points" : [20,20],
+    #     "crashes" : [2,4],
+    #     "ratio" : [10,5]
+    # }
+
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
     app.register_blueprint(c1_bp, url_prefix='/c1')
     app.register_blueprint(c2_bp, url_prefix='/c2')
+    app.register_blueprint(c4_bp, url_prefix='/c4')
+
     app.run(host='0.0.0.0', port=8000, debug=True)

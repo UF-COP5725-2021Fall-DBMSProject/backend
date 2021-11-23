@@ -8,6 +8,7 @@ pwd = sys.argv[1]
 import pandas as pd
 from sqlalchemy import create_engine
 
+
 from . import engine as eg
 
 engine = eg.engine_gen(pwd)
@@ -66,6 +67,7 @@ def c2_function(start_year, end_year, query_engine=engine):
                 FROM ConstructorBudget b
                 WHERE b.year = {ey}
             )
+
             SELECT distinct b1.constructorId as constructor_id, b1.name, 
             b1.budgets as First_year_budget,
             b2.budgets as Last_year_budget,
@@ -91,6 +93,7 @@ def c2_function(start_year, end_year, query_engine=engine):
                 SELECT AVG(avg_pits)
                 FROM Cons_avg_pits
             )
+
             SELECT distinct constructorId as constructor_id, name, avg_pits
             FROM Cons_avg_pits
             WHERE avg_pits <= (SELECT * FROM all_avg_pits)
@@ -114,6 +117,7 @@ def c2_function(start_year, end_year, query_engine=engine):
                 SELECT AVG(errors)
                 FROM Cons_total_errors
             )
+
             SELECT distinct ConstructorId as constructor_id, name, errors
             FROM Cons_total_errors
             WHERE errors <= (SELECT * FROM all_avg_errors)
@@ -123,6 +127,7 @@ def c2_function(start_year, end_year, query_engine=engine):
     cons_has_errors_less_than_avg = data.to_json(orient="table")
 
     return Constructor_performance,cons_whos_budget_increase_less_than_30percent, cons_has_pit_time_less_than_avg, cons_has_errors_less_than_avg
+
 
 # Constructor_performance,cons_whos_budget_increase_less_than_30percent, cons_has_pit_time_less_than_avg, cons_has_errors_less_than_avg = c2_function(2015,2017)
 # print(Constructor_performance)
