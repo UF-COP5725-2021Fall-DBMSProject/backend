@@ -3,7 +3,7 @@ from flask import jsonify
 from flask import Blueprint
 from flask import request
 from werkzeug.wrappers import response
-import query.c1_functions as c1Funcs
+import query.c3_functions as c3Funcs
 
 # testing
 import json
@@ -218,49 +218,144 @@ def c2_get_investable_constructors():
 
 
 ### C3 API ###
-@c3_bp.route('/funcA')
-def c3a():
+@c3_bp.route('/top10defender')
+def c3top10defender():
     
-    result = {}
-    result["data"] = {
-        999:{
-            "forname": "Nick",
-            "surname": "Young",
-            "data":[
-                {
-                    "year":2019,
-                    "race_name":"some race",
-                    "race_id":9527,
-                    "rival_id":487,
-                    "rival_forname":"Ryan",
-                    "rival_surname":"Kelly",
-                    "success_defense_laps":[
-                        {
-                            "lap":5,
-                            "position":6,
-                            "rival_position":7
-                        },
-                        {
-                            "lap":6,
-                            "position":6,
-                            "rival_position":7
-                        },
-                        {
-                            "lap":7,
-                            "position":6,
-                            "rival_position":7
-                        }
-                    ]
-                }
-            ]
-        }
+    q = c3Funcs.c3_function_get_top_10_defender_for_teammate()
+    q = json.loads(q)
+
+    data = {
+        "name" : [],
+        "driver_id" : [],
+        "defend_point" : []
     }
+
+    for d in q["data"]:
+        data["name"].append(d["defender_forename"] + " " + d["defender_surname"])
+        data["driver_id"].append(d["defender_driverid"])
+        data["defend_point"].append(d["defend_point"])
+
+    result = {}
+    result["data"] = data
+    # result["data"] = {
+    #     999:{
+    #         "forname": "Nick",
+    #         "surname": "Young",
+    #         "data":[
+    #             {
+    #                 "year":2019,
+    #                 "race_name":"some race",
+    #                 "race_id":9527,
+    #                 "rival_id":487,
+    #                 "rival_forname":"Ryan",
+    #                 "rival_surname":"Kelly",
+    #                 "success_defense_laps":[
+    #                     {
+    #                         "lap":5,
+    #                         "position":6,
+    #                         "rival_position":7
+    #                     },
+    #                     {
+    #                         "lap":6,
+    #                         "position":6,
+    #                         "rival_position":7
+    #                     },
+    #                     {
+    #                         "lap":7,
+    #                         "position":6,
+    #                         "rival_position":7
+    #                     }
+    #                 ]
+    #             }
+    #         ]
+    #     }
+    # }
 
     response = jsonify({"result":result})
     if app.debug:
         # [Important] Let web are able to hit the domain 'localhost'
         response.headers.add('Access-Control-Allow-Origin', '*')
     return response    
+
+@c3_bp.route("/top10record/<int:id>")
+def top10record(id):
+    q = c3Funcs.c3_function_get_defender_best_10_records(id)
+    q = json.loads(q)
+
+    data = {
+        "year" : [],
+        "defender_name" : [],
+        "defender_id": [],
+        "opponent_id" : [],
+        "opponent_name" : [],
+        "teammate_id" : [],
+        "teammate_name" : [],
+        "race_id": [],
+        "race_name" : [],
+        "defend_point": []
+    }
+
+    for d in q["data"]:
+        data["year"].append(d["year"])
+        data["defender_name"].append(d["defender_forename"] + " " + d["defender_surname"])
+        data["defender_id"].append(d["defender_driverid"])
+        data["opponent_id"].append(d["victim_driverid"])
+        data["opponent_name"].append(d["victim_forename"] + " " + d["victim_surname"])
+        data["teammate_id"].append(d["teammate_driverid"])
+        data["teammate_name"].append(d["teammate_forename"] + " " + d["teammate_surname"])
+        data["race_id"].append(d["raceid"])
+        data["race_name"].append(d["race_name"])
+        data["defend_point"].append(d["defend_point"])
+
+    result = {}
+    result["data"] = data
+
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@c3_bp.route("/recorddetail")
+def c3recorddetaik():
+    raceid = request.args.get("race_id")
+    defender_id = request.args.get("defender_id")
+    opponent_id = request.args.get("opponent_id")
+    teammate_id = request.args.get("teammate_id")
+
+    q = c3Funcs.c3_function_get_defender_record_detail(raceid, defender_id, opponent_id, teammate_id)
+    q = json.loads(q)
+
+    data = {
+        "race_id":raceid,
+        "defender_id":defender_id,
+        "opponent_id":opponent_id,
+        "teammate_id":teammate_id,
+        "race_name":q["data"][0]["race_name"],
+        "defender_name": q["data"][0]["defender_forename"] + " " + q["data"][0]["defender_surname"],
+        "opponent_name": q["data"][0]["victim_forename"] + " " + q["data"][0]["victim_surname"],
+        "teammate_name": q["data"][0]["teammate_forename"] + " " + q["data"][0]["teammate_surname"],
+
+        "lap":[],
+        "defender_position":[],
+        "opponent_position":[],
+        "teammate_position":[]
+    }
+
+    for d in q["data"]:
+        data["lap"].append(d["index"]+1)
+        data["defender_position"].append(d["defender_position"])
+        data["opponent_position"].append(d["victim_position"])
+        data["teammate_position"].append(d["teammate_position"])
+
+    result = {}
+    result["data"] = data
+
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')

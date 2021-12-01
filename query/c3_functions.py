@@ -8,7 +8,7 @@ pwd = sys.argv[1]
 import pandas as pd
 from sqlalchemy import create_engine
 
-import engine as eg
+from . import engine as eg
 
 engine = eg.engine_gen(pwd)
 
@@ -95,7 +95,7 @@ def c3_function_get_top_10_defender_for_teammate(query_engine=engine):
 
     return top_10_defender_for_teammate
 
-top_10_defender_for_teammate = c3_function_get_top_10_defender_for_teammate()
+# top_10_defender_for_teammate = c3_function_get_top_10_defender_for_teammate()
 
 def c3_function_get_defender_best_10_records(defender_driverId, query_engine=engine):
 
@@ -174,8 +174,8 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
             )
             SELECT r.year, dr.raceId, r.name as race_name, dr.defender_driverId, def.forename as defender_forename, def.surname as defender_surname,
                                             dr.victim_driverId, vic.forename as victim_forename, vic.surname as victim_surname,
-                                            dr.teammate_driverId, tea.forename as teammate_forename, tea.surname as teammate_furname,
-                                            COUNT(dr.start_lap) as defend_points
+                                            dr.teammate_driverId, tea.forename as teammate_forename, tea.surname as teammate_surname,
+                                            COUNT(dr.start_lap) as defend_point
             FROM defend_record dr
             INNER JOIN races r ON r.raceId=dr.raceId 
             INNER JOIN drivers def ON def.driverId = dr.defender_driverId
@@ -191,9 +191,9 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
 
     return defender_best_10_records
 
-defender_driverId=13
-defender_best_10_records = c3_function_get_defender_best_10_records(defender_driverId)
-#print(defender_best_10_records)
+# defender_driverId=13
+# defender_best_10_records = c3_function_get_defender_best_10_records(defender_driverId)
+# print(defender_best_10_records)
 
 def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_driverId, teammate_driverId, query_engine=engine):
     query = '''
@@ -218,7 +218,7 @@ def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_dri
             SELECT ra.year, r.raceId as raceId, ra.name as race_name, 
                    def.driverId as defender_driverId, def.forename as defender_forename, def.surname as defender_surname, r.defender_position as defender_position,
                    vic.driverId as victim_driverId, vic.forename  as victim_forename, vic.surname as victim_surname, r.victim_position as victim_position,
-                   tmt.driverId as teammate_driverId, tmt.forename as teammmate_forename, tmt.surname as teammate_surname, r.teammate_position as teammate_position
+                   tmt.driverId as teammate_driverId, tmt.forename as teammate_forename, tmt.surname as teammate_surname, r.teammate_position as teammate_position
             FROM their_record r
             INNER JOIN drivers def ON r.defender_driverId=def.driverId
             INNER JOIN drivers vic ON r.victim_driverId=vic.driverId
@@ -230,11 +230,11 @@ def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_dri
 
     return defender_victim_teammate_record_detail
 
-raceId = 348
-defender_driverId = 13
-victim_driverId = 808
-teammate_driverId = 4
-defender_victim_teammate_record_detail = c3_function_get_defender_record_detail(raceId, defender_driverId,victim_driverId,teammate_driverId)
+# raceId = 348
+# defender_driverId = 13
+# victim_driverId = 808
+# teammate_driverId = 4
+# defender_victim_teammate_record_detail = c3_function_get_defender_record_detail(raceId, defender_driverId,victim_driverId,teammate_driverId)
 #print(defender_victim_teammate_record_detail)
 
 

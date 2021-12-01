@@ -8,7 +8,7 @@ pwd = sys.argv[1]
 import pandas as pd
 from sqlalchemy import create_engine
 
-import engine as eg
+from . import engine as eg
 
 engine = eg.engine_gen(pwd)
 
@@ -124,7 +124,7 @@ def c2_function(start_year, end_year, query_engine=engine):
 
     return Constructor_performance,cons_whos_budget_increase_less_than_30percent, cons_has_pit_time_less_than_avg, cons_has_errors_less_than_avg
 
-Constructor_performance,cons_whos_budget_increase_less_than_30percent, cons_has_pit_time_less_than_avg, cons_has_errors_less_than_avg = c2_function(2015,2017)
+# Constructor_performance,cons_whos_budget_increase_less_than_30percent, cons_has_pit_time_less_than_avg, cons_has_errors_less_than_avg = c2_function(2015,2017)
 # print(Constructor_performance)
 # print(cons_whos_budget_increase_less_than_30percent,"\n\n")
 # print(cons_has_pit_time_less_than_avg,"\n\n")
