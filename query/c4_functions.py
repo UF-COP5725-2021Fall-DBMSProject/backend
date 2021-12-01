@@ -118,7 +118,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
 
     return useless_drivers,top_ten_risky_drivers, top_ten_aggresive_drivers
 
-useless_drivers,top_ten_risky_drivers, top_ten_aggresive_drivers = c4_function_get_useless_risky_aggresive_drivers_list()
+# useless_drivers,top_ten_risky_drivers, top_ten_aggresive_drivers = c4_function_get_useless_risky_aggresive_drivers_list()
 
 def c4_function_a(driverId,query_engine=engine):
     query = '''
@@ -154,7 +154,8 @@ def c4_function_a(driverId,query_engine=engine):
 
     return detail_record_of_any_risky_drivers
 
-detail_record_of_any_risky_drivers = c4_function_a(2)
+
+# detail_record_of_any_risky_drivers = c4_function_a(2)
 
 #print(detail_record_of_any_risky_drivers)
 
