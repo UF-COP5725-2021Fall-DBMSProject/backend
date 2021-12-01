@@ -43,7 +43,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
             INNER JOIN drivers d ON dpe.driverId=d.driverId
             GROUP BY d.driverId, d.forename , d.surname
             HAVING SUM(points)<10
-            ORDER BY SUM(crash) DESC, SUM(points) DESC
+            ORDER BY SUM(points)/SUM(crash) ASC, SUM(crash) DESC
             '''
     data = pd.read_sql(query, query_engine)
     useless_drivers = data.to_json(orient="table")
@@ -76,7 +76,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
             INNER JOIN drivers d ON dpe.driverId=d.driverId
             GROUP BY d.driverId, d.forename , d.surname
             HAVING SUM(points)>10
-            ORDER BY  sum(crash)/sum(points) DESC
+            ORDER BY sum(crash)/sum(points) DESC
             FETCH First 10 ROWS ONLY
             '''
     data = pd.read_sql(query, query_engine)
@@ -154,10 +154,13 @@ def c4_function_a(driverId,query_engine=engine):
 
     return detail_record_of_any_risky_drivers
 
+
 # detail_record_of_any_risky_drivers = c4_function_a(2)
+
 #print(detail_record_of_any_risky_drivers)
 
 
 # https://www.oracletutorial.com/python-oracle/connecting-to-oracle-database-in-python/
 # https://oracle.github.io/python-cx_Oracle/
+
 # https://stackoverflow.com/questions/55823744/how-to-fix-cx-oracle-databaseerror-dpi-1047-cannot-locate-a-64-bit-oracle-cli

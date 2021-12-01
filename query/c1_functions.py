@@ -73,7 +73,8 @@ def c1_function_get_competitive_drivers(query_engine=engine):
                 ORDER BY similarity DESC
                 --FETCH FIRST 10 ROWS ONLY
             )
-            SELECT driverId,d.forename, d.surname, (a.similarity+b.similarity+c.similarity)/3 as total_similarity_with_lowis
+
+            SELECT driverId,d.forename, d.surname, (a.similarity+b.similarity+c.similarity)/3 as total_similarity_with_lewis
             FROM someone_performance_compare_with_lewis_when_playing_in_same_game a
             INNER JOIN first_3_year_similarity b USING (driverId)
             INNER JOIN someone_duration_compare_with_lewis_when_playing_in_same_lap c USING (driverId)
@@ -85,8 +86,10 @@ def c1_function_get_competitive_drivers(query_engine=engine):
     Best_10_driver_who_like_lewis = data.to_json(orient="table")
     return Best_10_driver_who_like_lewis
 
-# Best_10_driver_who_like_lewis = c1_function_get_competitive_drivers()
+#Best_10_driver_who_like_lewis = c1_function_get_competitive_drivers()
+
 #print(Best_10_driver_who_like_lewis)
+
 
 def c1_function_a(driverId,query_engine=engine):
 
@@ -103,7 +106,8 @@ def c1_function_a(driverId,query_engine=engine):
             INNER JOIN results r ON d.driverId=r.driverID
             INNER JOIN races ra ON r.raceId = ra.raceId
             INNER JOIN L_races lr ON lr.raceId = ra.raceId
-            WHERE d.driverId = {} AND r.points<>0'''.format(driverId) 
+            WHERE d.driverId = {} AND r.points<>0
+            ORDER BY ra.year ASC, ra.raceId ASC'''.format(driverId)
 
     data = pd.read_sql(query, query_engine)
     json_all_result = data.to_json(orient="table")
@@ -132,7 +136,7 @@ def c1_function_a(driverId,query_engine=engine):
     json_compare_result = data.to_json(orient="table")
     return json_all_result, json_compare_result
 
-# compare_in_each_race, compare_all_same_race = c1_function_a(2)
+#compare_in_each_race, compare_all_same_race = c1_function_a(2)
 #print(compare_in_each_race)
 #print(compare_all_same_race)
 
@@ -195,11 +199,9 @@ def c1_function_b(driverId, query_engine=engine):
     data = pd.read_sql(query, query_engine)
     similarity_of_first_three_years = data.to_json(orient="table")
 
+
     return compare_first_three_years, similarity_of_first_three_years
 
-# compare_first_three_years, similarity_of_first_three_years = c1_function_b(2)
-#print(compare_first_three_years)
-#print(similarity_of_first_three_years)
 
 def c1_function_c(driverId, query_engine=engine):
     query = '''
@@ -248,8 +250,10 @@ def c1_function_c(driverId, query_engine=engine):
 
     return compare_in_each_lap, compare_avg_laps_time
 
+
 # compare_in_each_lap, compare_avg_laps_time = c1_function_c(2)
-#print(compare_in_each_lap, compare_avg_laps_time)
+# print(compare_in_each_lap, compare_avg_laps_time)
+
 
 
 

@@ -195,6 +195,7 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
 # defender_best_10_records = c3_function_get_defender_best_10_records(defender_driverId)
 # print(defender_best_10_records)
 
+
 def c3_function_get_defender_record_detail(raceId, defender_driverId, victim_driverId, teammate_driverId, query_engine=engine):
     query = '''
             WITH Race_lap(raceId, lap, driverId, position) AS(
