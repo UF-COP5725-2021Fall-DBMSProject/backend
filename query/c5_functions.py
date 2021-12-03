@@ -20,17 +20,18 @@ def c5_function_get_top_10_spoilers(query_engine=engine):
                 FROM pitstops ps
                 GROUP BY raceId, driverId
             )
-            SELECT d.driverId, d.forename, d.surname, AVG(q.position - re.position) as Lose_position, COUNT(ra.raceId) as race_num
+            SELECT d.driverId, d.forename, d.surname, AVG(q.position - re.position) as position_diff, COUNT(ra.raceId) as race_num
             FROM drivers d
             INNER JOIN qualifying q ON d.driverId = q.driverId
             INNER JOIN races ra ON q.raceId = ra.raceId
             INNER JOIN results re ON re.raceId = ra.raceId AND re.driverId = d.driverId
             INNER JOIN avg_pitstops aps ON aps.raceId = ra.raceId AND aps.driverId = d.driverId
             WHERE aps.duration_sec < (SELECT AVG(duration_sec) FROM avg_pitstops)
-            AND q.position is not NULL AND re.position is not NULL
+            AND q.position is not NULL 
+            AND re.position is not NULL
             GROUP BY d.driverId, d.forename, d.surname
-            HAVING COUNT(ra.raceId) > 20
-            ORDER BY AVG(q.position - re.position) 
+            HAVING COUNT(ra.raceId) > 10
+            ORDER BY AVG(q.position - re.position) ASC
             FETCH FIRST 10 ROW ONLY
             '''
     data = pd.read_sql(query, query_engine)
@@ -49,7 +50,7 @@ def c5_function_get_spoiler_record(driverId,query_engine=engine):
             )
             SELECT ra.year, ra.raceId as race_id, ra.name as Race_name, d.driverId, d.forename as Forename, d.surname as Surname, 
                    q.position as qualifying_position, re.position as result_position ,
-                   q.position - re.position as Lose_position
+                   q.position - re.position as position_diff
             FROM drivers d
             INNER JOIN qualifying q ON d.driverId = q.driverId
             INNER JOIN races ra ON q.raceId = ra.raceId
@@ -58,7 +59,7 @@ def c5_function_get_spoiler_record(driverId,query_engine=engine):
             WHERE d.driverId={did}
             AND q.position is not NULL AND re.position is not NULL
             AND aps.duration_sec < (SELECT AVG(duration_sec) FROM avg_pitstops)
-            ORDER BY q.position - re.position
+            ORDER BY q.position - re.position ASC
             FETCH FIRST 10 ROW ONLY
             '''.format(did=driverId)
 
