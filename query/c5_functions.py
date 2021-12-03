@@ -8,11 +8,11 @@ pwd = sys.argv[1]
 import pandas as pd
 from sqlalchemy import create_engine
 
-import engine as eg
+from . import engine as eg
 
 engine = eg.engine_gen(pwd)
 
-def c5_function_get_top_10_spoliers(query_engine=engine):
+def c5_function_get_top_10_spoilers(query_engine=engine):
 
     query = '''
             WITH avg_pitstops(raceId, driverId, duration_sec) AS(
@@ -30,24 +30,24 @@ def c5_function_get_top_10_spoliers(query_engine=engine):
             AND q.position is not NULL AND re.position is not NULL
             GROUP BY d.driverId, d.forename, d.surname
             HAVING COUNT(ra.raceId) > 20
-            ORDER BY AVG(q.position - re.position) DESC
+            ORDER BY AVG(q.position - re.position) 
             FETCH FIRST 10 ROW ONLY
             '''
     data = pd.read_sql(query, query_engine)
-    top_ten_spoliers = data.to_json(orient="table")
+    top_ten_spoilers = data.to_json(orient="table")
 
-    return top_ten_spoliers
+    return top_ten_spoilers
 
-top_ten_spoliers= c5_function_get_top_10_spoliers()
+# top_ten_spoilers= c5_function_get_top_10_spoilers()
 
-def c5_function_get_spolier_record(driverId,query_engine=engine):
+def c5_function_get_spoiler_record(driverId,query_engine=engine):
     query = '''
             WITH avg_pitstops(raceId, driverId, duration_sec) AS(
                 SELECT raceId, driverId, AVG(milliseconds)/1000 as duration_sec
                 FROM pitstops ps
                 GROUP BY raceId, driverId
             )
-            SELECT ra.year, ra.raceId, ra.name as Race_name, d.driverId, d.forename as Forename, d.surname as Surname, 
+            SELECT ra.year, ra.raceId as race_id, ra.name as Race_name, d.driverId, d.forename as Forename, d.surname as Surname, 
                    q.position as qualifying_position, re.position as result_position ,
                    q.position - re.position as Lose_position
             FROM drivers d
@@ -58,16 +58,16 @@ def c5_function_get_spolier_record(driverId,query_engine=engine):
             WHERE d.driverId={did}
             AND q.position is not NULL AND re.position is not NULL
             AND aps.duration_sec < (SELECT AVG(duration_sec) FROM avg_pitstops)
-            ORDER BY q.position - re.position DESC
+            ORDER BY q.position - re.position
             FETCH FIRST 10 ROW ONLY
             '''.format(did=driverId)
 
     data = pd.read_sql(query, query_engine)
-    spolier_record = data.to_json(orient="table")
+    spoiler_record = data.to_json(orient="table")
 
-    return spolier_record
+    return spoiler_record
 
-spolier_record = c5_function_get_spolier_record(2)
+# spoiler_record = c5_function_get_spoiler_record(2)
 #print(detail_record_of_any_risky_drivers)
 
 
