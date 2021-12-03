@@ -7,6 +7,7 @@ import query.c1_functions as c1Funcs
 import query.c2_functions as c2Funcs
 import query.c3_functions as c3Funcs
 import query.c4_functions as c4Funcs
+import query.c5_functions as c5Funcs
 import copy
 
 # testing
@@ -44,6 +45,7 @@ c1_bp = Blueprint('C1',__name__)
 c2_bp = Blueprint('C2',__name__)
 c3_bp = Blueprint('C3',__name__)
 c4_bp = Blueprint('C4',__name__)
+c5_bp = Blueprint('C5',__name__)
 
 ### C1 API ###
 @c1_bp.route('/competitive-drivers')
@@ -554,11 +556,77 @@ def c4_get_aggressive_driver():
         response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+### C5 API ###
+@c5_bp.route('/top10spoiler')
+def c5_get_top10spoiler():
+
+    q = c5Funcs.c5_function_get_top_10_spoilers()
+    q = json.loads(q)
+
+    data = {
+        "driver_id":[],
+        "driver_name":[],
+        "position_diff":[],
+        "race_cnt":[]
+    }
+
+    for d in q["data"]:
+        data["driver_name"].append(d["forename"] + " " + d["surname"])
+        data["driver_id"].append(d["driverid"])
+        data["position_diff"].append(d["position_diff"])
+        data["race_cnt"].append(d["race_num"])
+
+    result = {}
+    result["data"] = data
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@c5_bp.route('/spoilerrecord/<int:id>')
+def c5_get_spoiler_record(id):
+
+    q = c5Funcs.c5_function_get_spoiler_record(id)
+    q = json.loads(q)
+
+    data = {
+        "year": [],
+        "race_id": [],
+        "race_name": [],
+        "driver_name": q["data"][0]["forename"] + " " + q["data"][0]["surname"],
+        "driver_id": id,
+        "qualifying_position": [],
+        "result_position": [],
+        "position_diff": []
+    }
+    attr_list = [
+        "year",
+        "race_id",
+        "race_name",
+        "qualifying_position",
+        "result_position",
+        "position_diff"
+    ]
+
+    for d in q["data"]:
+        for attr in attr_list:
+            data[attr].append(d[attr])
+
+    result = {}
+    result["data"] = data
+    response = jsonify({"result":result})
+    if app.debug:
+        # [Important] Let web are able to hit the domain 'localhost'
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 if __name__ == '__main__':
     app.register_blueprint(example_bp, url_prefix='/example')
     app.register_blueprint(c1_bp, url_prefix='/c1')
     app.register_blueprint(c2_bp, url_prefix='/c2')
     app.register_blueprint(c3_bp, url_prefix='/c3')
     app.register_blueprint(c4_bp, url_prefix='/c4')
+    app.register_blueprint(c5_bp, url_prefix='/c5')
  
     app.run(host='0.0.0.0', port=8000, debug=True)
