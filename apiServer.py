@@ -566,14 +566,14 @@ def c5_get_top10spoiler():
     data = {
         "driver_id":[],
         "driver_name":[],
-        "lose_position":[],
+        "position_diff":[],
         "race_cnt":[]
     }
 
     for d in q["data"]:
         data["driver_name"].append(d["forename"] + " " + d["surname"])
         data["driver_id"].append(d["driverid"])
-        data["lose_position"].append(d["lose_position"])
+        data["position_diff"].append(d["position_diff"])
         data["race_cnt"].append(d["race_num"])
 
     result = {}
@@ -598,7 +598,7 @@ def c5_get_spoiler_record(id):
         "driver_id": id,
         "qualifying_position": [],
         "result_position": [],
-        "lose_position": []
+        "position_diff": []
     }
     attr_list = [
         "year",
@@ -606,7 +606,7 @@ def c5_get_spoiler_record(id):
         "race_name",
         "qualifying_position",
         "result_position",
-        "lose_position"
+        "position_diff"
     ]
 
     for d in q["data"]:
