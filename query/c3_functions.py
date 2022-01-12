@@ -23,42 +23,45 @@ def c3_function_get_top_10_defender_for_teammate(query_engine=engine):
                 SELECT d1.raceId, d1.lap, d1.driverId, d1.position, d2.driverId, d2.position
                 FROM driver_lap d1, driver_lap d2
                 WHERE d1.raceId=d2.raceId
-                AND d1.raceId=d2.raceId
                 AND d1.lap=d2.lap 
                 AND d1.driverId<>d2.driverId
                 AND d1.position < d2.position
-            ), cartesian_product_same_team_driver_lap(raceId, lap, driverId_1, position_1, driverId_2, position_2) AS(
+            ), cartesian_same_team_lap(raceId, lap, driverId_1, position_1, driverId_2, position_2) AS(
                 SELECT c.raceId, c.lap, c.driverId_1, c.position_1, c.driverId_2, c.position_2
                 FROM cartesian_product_driver_lap c
                 INNER JOIN results r1 ON c.raceId=r1.raceId AND c.driverId_1=r1.driverId
                 INNER JOIN results r2 ON c.raceId=r2.raceId AND c.driverId_2=r2.driverId
                 WHERE r1.constructorId=r2.constructorId
                 -- WHERE c.position_1 < c.position_2, already exist
-            ), cartesian_product_driver_lap_add_same_team_advanced_driver
+            ), drivers_and_advanced_teammate
                             (raceId, lap, defender_driverId, defender_position, 
                                           victim_driverId, victim_position, 
                                           teammate_driverId, teammate_position) AS(
-                SELECT c1.raceId, c1.lap, c1.driverId_1, c1.position_1, c1.driverId_2, c1.position_2, c_with_teammate.driverId_1, c_with_teammate.position_1
+                SELECT c1.raceId, c1.lap, 
+                        c1.driverId_1, c1.position_1, 
+                        c1.driverId_2, c1.position_2, 
+                        c_with_teammate.driverId_1, c_with_teammate.position_1
                 FROM cartesian_product_driver_lap c1
-                INNER JOIN cartesian_product_same_team_driver_lap c_with_teammate 
+                INNER JOIN cartesian_same_team_lap c_with_teammate 
                         ON c1.raceId=c_with_teammate.raceId 
                            AND c1.lap=c_with_teammate.lap
                            AND c1.driverId_1 = c_with_teammate.driverId_2
+                -- now, there is three driver: teammate -> defender -> victim
             ), defender_records(raceId, startlap, defender_driverId, victim_driverId, teammate_driverId) AS(
                 SELECT c1.raceId, c1.lap, c1.defender_driverId, c1.victim_driverId, c1.teammate_driverId   --COUNT(DISTINCT c1.driverId_1)
-                FROM cartesian_product_driver_lap_add_same_team_advanced_driver c1
+                FROM drivers_and_advanced_teammate c1
                 WHERE c1.victim_position-c1.defender_position BETWEEN 1 AND 2
                 AND EXISTS(
                     SELECT *
-                    FROM cartesian_product_driver_lap_add_same_team_advanced_driver c2
+                    FROM drivers_and_advanced_teammate c2
                     WHERE c1.raceId=c2.raceId
-                    AND c1.lap=c2.lap-1
+                    AND c1.lap=c2.lap-1 -- next lap
                     AND c1.defender_driverId=c2.defender_driverId
                     AND c1.victim_driverId=c2.victim_driverId
                     AND c2.victim_position-c2.defender_position BETWEEN 1 AND 2)
                 AND EXISTS(
                     SELECT *
-                    FROM cartesian_product_driver_lap_add_same_team_advanced_driver c3
+                    FROM drivers_and_advanced_teammate c3
                     WHERE c1.raceId=c3.raceId
                     AND c1.lap=c3.lap-2
                     AND c1.defender_driverId=c3.defender_driverId
@@ -66,7 +69,7 @@ def c3_function_get_top_10_defender_for_teammate(query_engine=engine):
                     AND c3.victim_position-c3.defender_position BETWEEN 1 AND 2)
                 AND EXISTS(
                     SELECT *
-                    FROM cartesian_product_driver_lap_add_same_team_advanced_driver c4
+                    FROM drivers_and_advanced_teammate c4
                     WHERE c1.raceId=c4.raceId
                     AND c1.lap=c4.lap-3
                     AND c1.defender_driverId=c4.defender_driverId
@@ -74,7 +77,7 @@ def c3_function_get_top_10_defender_for_teammate(query_engine=engine):
                     AND c4.victim_position-c4.defender_position BETWEEN 1 AND 2)
                 AND EXISTS(
                     SELECT *
-                    FROM cartesian_product_driver_lap_add_same_team_advanced_driver c5
+                    FROM drivers_and_advanced_teammate c5
                     WHERE c1.raceId=c5.raceId
                     AND c1.lap=c5.lap-4
                     AND c1.defender_driverId=c5.defender_driverId
@@ -112,20 +115,20 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
                 AND d1.lap=d2.lap 
                 AND d1.driverId<>d2.driverId
                 AND d1.position < d2.position
-            ), cartesian_product_same_team_driver_lap(raceId, lap, driverId_1, position_1, driverId_2, position_2) AS(
+            ), cartesian_same_team_lap(raceId, lap, driverId_1, position_1, driverId_2, position_2) AS(
                 SELECT c.raceId, c.lap, c.driverId_1, c.position_1, c.driverId_2, c.position_2
                 FROM cartesian_product_driver_lap c
                 INNER JOIN results r1 ON c.raceId=r1.raceId AND c.driverId_1=r1.driverId
                 INNER JOIN results r2 ON c.raceId=r2.raceId AND c.driverId_2=r2.driverId
                 WHERE r1.constructorId=r2.constructorId
                 -- WHERE c.position_1 < c.position_2, already exist
-            ), cartesian_product_driver_lap_add_same_team_advanced_driver
+            ), drivers_and_advanced_teammate
                             (raceId, lap, defender_driverId, defender_position, 
                                           victim_driverId, victim_position, 
                                           teammate_driverId, teammate_position) AS(
                 SELECT c1.raceId, c1.lap, c1.driverId_1, c1.position_1, c1.driverId_2, c1.position_2, c_with_teammate.driverId_1, c_with_teammate.position_1
                 FROM cartesian_product_driver_lap c1
-                INNER JOIN cartesian_product_same_team_driver_lap c_with_teammate 
+                INNER JOIN cartesian_same_team_lap c_with_teammate 
                         ON c1.raceId=c_with_teammate.raceId 
                            AND c1.lap=c_with_teammate.lap
                            AND c1.driverId_1 = c_with_teammate.driverId_2
@@ -136,11 +139,11 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
             SELECT c1.raceId, c1.lap as start_lap, c1.defender_driverId, c1.defender_position, 
                                                     c1.victim_driverId, c1.victim_position,
                                                      c1.teammate_driverId, c1.teammate_position
-            FROM cartesian_product_driver_lap_add_same_team_advanced_driver c1
+            FROM drivers_and_advanced_teammate c1
             WHERE c1.victim_position-c1.defender_position BETWEEN 1 AND 2
             AND EXISTS(
                 SELECT *
-                FROM cartesian_product_driver_lap_add_same_team_advanced_driver c2
+                FROM drivers_and_advanced_teammate c2
                 WHERE c1.raceId=c2.raceId
                 AND c1.lap=c2.lap-1
                 AND c1.defender_driverId=c2.defender_driverId
@@ -148,7 +151,7 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
                 AND c2.victim_position-c2.defender_position BETWEEN 1 AND 2)
             AND EXISTS(
                 SELECT *
-                FROM cartesian_product_driver_lap_add_same_team_advanced_driver c3
+                FROM drivers_and_advanced_teammate c3
                 WHERE c1.raceId=c3.raceId
                 AND c1.lap=c3.lap-2
                 AND c1.defender_driverId=c3.defender_driverId
@@ -156,7 +159,7 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
                 AND c3.victim_position-c3.defender_position BETWEEN 1 AND 2)
             AND EXISTS(
                 SELECT *
-                FROM cartesian_product_driver_lap_add_same_team_advanced_driver c4
+                FROM drivers_and_advanced_teammate c4
                 WHERE c1.raceId=c4.raceId
                 AND c1.lap=c4.lap-3
                 AND c1.defender_driverId=c4.defender_driverId
@@ -164,7 +167,7 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
                 AND c4.victim_position-c4.defender_position BETWEEN 1 AND 2)
             AND EXISTS(
                 SELECT *
-                FROM cartesian_product_driver_lap_add_same_team_advanced_driver c5
+                FROM drivers_and_advanced_teammate c5
                 WHERE c1.raceId=c5.raceId
                 AND c1.lap=c5.lap-4
                 AND c1.defender_driverId=c5.defender_driverId
@@ -174,8 +177,8 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
             )
             SELECT r.year, dr.raceId, r.name as race_name, dr.defender_driverId, def.forename as defender_forename, def.surname as defender_surname,
                                             dr.victim_driverId, vic.forename as victim_forename, vic.surname as victim_surname,
-                                            dr.teammate_driverId, tea.forename as teammate_forename, tea.surname as teammate_surname,
-                                            COUNT(dr.start_lap) as defend_point
+                                            dr.teammate_driverId, tea.forename as teammate_forename, tea.surname as teammate_furname,
+                                            COUNT(dr.start_lap) as defend_points
             FROM defend_record dr
             INNER JOIN races r ON r.raceId=dr.raceId 
             INNER JOIN drivers def ON def.driverId = dr.defender_driverId

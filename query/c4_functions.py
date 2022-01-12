@@ -31,7 +31,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
                 GROUP BY d.driverId, ra.year
                 HAVING COUNT(re.statusId)>3
                 ORDER BY d.driverId, ra.year
-            ), driver_point_and_error_each_year(driverId, year, points, crash) AS (
+            ), driver_point_and_err_per_year(driverId, year, points, crash) AS (
                 SELECT DISTINCT dp.driverId, dp.year, dp.all_points as points, de.crash as crash  --, dp.all_points/de.crash as ratio
                 FROM driver_points dp
                 INNER JOIN driver_error de ON dp.driverId=de.driverId AND dp.year=de.year
@@ -39,7 +39,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
             )
             SELECT d.driverId, d.forename as forename, d.surname as surname, 
                     SUM(points) as total_point, SUM(crash) as total_crash
-            FROM driver_point_and_error_each_year dpe
+            FROM driver_point_and_err_per_year dpe
             INNER JOIN drivers d ON dpe.driverId=d.driverId
             GROUP BY d.driverId, d.forename , d.surname
             HAVING SUM(points)<10
@@ -64,7 +64,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
                 WHERE statusId BETWEEN 3 and 4
                 GROUP BY d.driverId, ra.year
                 ORDER BY d.driverId, ra.year
-            ), driver_point_and_error_each_year(driverId, year, points, crash) AS (
+            ), driver_point_and_err_per_year(driverId, year, points, crash) AS (
                 SELECT DISTINCT dp.driverId, dp.year, dp.all_points as points, de.crash as crash  --, dp.all_points/de.crash as ratio
                 FROM driver_points dp
                 INNER JOIN driver_error de ON dp.driverId=de.driverId AND dp.year=de.year
@@ -72,7 +72,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
             )
             SELECT d.driverId, d.forename as forename, d.surname as surname, 
                     SUM(points) as total_point, SUM(crash) as total_crash, sum(crash)/sum(points) as crash_devide_by_point
-            FROM driver_point_and_error_each_year dpe
+            FROM driver_point_and_err_per_year dpe
             INNER JOIN drivers d ON dpe.driverId=d.driverId
             GROUP BY d.driverId, d.forename , d.surname
             HAVING SUM(points)>10
@@ -99,7 +99,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
                 WHERE statusId BETWEEN 3 and 4
                 GROUP BY d.driverId, ra.year
                 ORDER BY d.driverId, ra.year
-            ), driver_point_and_error_each_year(driverId, year, points, crash) AS (
+            ), driver_point_and_err_per_year(driverId, year, points, crash) AS (
                 SELECT DISTINCT dp.driverId, dp.year, dp.all_points as points, de.crash as crash  --, dp.all_points/de.crash as ratio
                 FROM driver_points dp
                 INNER JOIN driver_error de ON dp.driverId=de.driverId AND dp.year=de.year
@@ -107,7 +107,7 @@ def c4_function_get_useless_risky_aggresive_drivers_list(query_engine=engine):
             )
             SELECT d.driverId, d.forename as forename, d.surname as surname, 
                     SUM(points) as total_point, SUM(crash) as total_crash, sum(points)/sum(crash) as point_devide_by_crash
-            FROM driver_point_and_error_each_year dpe
+            FROM driver_point_and_err_per_year dpe
             INNER JOIN drivers d ON dpe.driverId=d.driverId
             GROUP BY d.driverId, d.forename , d.surname
             ORDER BY sum(points)/sum(crash) DESC
