@@ -177,8 +177,8 @@ def c3_function_get_defender_best_10_records(defender_driverId, query_engine=eng
             )
             SELECT r.year, dr.raceId, r.name as race_name, dr.defender_driverId, def.forename as defender_forename, def.surname as defender_surname,
                                             dr.victim_driverId, vic.forename as victim_forename, vic.surname as victim_surname,
-                                            dr.teammate_driverId, tea.forename as teammate_forename, tea.surname as teammate_furname,
-                                            COUNT(dr.start_lap) as defend_points
+                                            dr.teammate_driverId, tea.forename as teammate_forename, tea.surname as teammate_surname,
+                                            COUNT(dr.start_lap) as defend_point
             FROM defend_record dr
             INNER JOIN races r ON r.raceId=dr.raceId 
             INNER JOIN drivers def ON def.driverId = dr.defender_driverId
