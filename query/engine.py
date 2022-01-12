@@ -8,9 +8,9 @@ def engine_gen(pwd):
 
     engine = create_engine(
         oracle_connection_string.format(
-            username='huang.c1',
+            username='admin',
             password='{}'.format(pwd),
-            hostname='oracle.cise.ufl.edu',
+            hostname='ufl-dbms-oracle.cd9u1miwbskg.us-east-1.rds.amazonaws.com',
             port='1521',
             database='orcl',
         )
