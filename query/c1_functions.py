@@ -21,7 +21,7 @@ def c1_function_get_competitive_drivers(query_engine=engine):
                 FROM DRIVERS d 
                 INNER JOIN results r ON d.driverId=r.driverID
                 WHERE d.driverId = 1 AND r.points<>0
-            ), someone_performance_compare_with_lewis_when_playing_in_same_game(driverId, similarity) AS (
+            ), compare_lewis_same_game(driverId, similarity) AS (
                 SELECT d.driverId as driverId,
                        sum(r.points)/sum(lr.points) as like_lewis
                        --RANK() OVER (ORDER BY sum(r.points)/sum(lr.points) ASC) rank
@@ -38,14 +38,14 @@ def c1_function_get_competitive_drivers(query_engine=engine):
                 FROM races ra
                 INNER JOIN results r ON r.raceId=ra.raceId
                 GROUP BY r.driverId
-            ), L_first_3_year_races_avg_points(driverId, points) AS(
+            ), L_first_3_year_avg_pts(driverId, points) AS(
                 SELECT driverId, AVG(r.points)
                 FROM results r
                 INNER JOIN races ra USING (raceId)
                 WHERE r.driverId = 1 and r.points<>0 
                 and ra.year between (SELECT year FROM every_one_first_year e WHERE e.driverId=r.driverId) and (SELECT year+2 FROM every_one_first_year e WHERE e.driverId=r.driverId)
                 GROUP BY driverId
-            ), A_first_3_year_races_avg_points(driverId, points) AS(
+            ), fst_3y_avg_pts(driverId, points) AS(
                 SELECT driverId, AVG(r.points)
                 FROM results r
                 INNER JOIN races ra USING (raceId)
@@ -53,9 +53,9 @@ def c1_function_get_competitive_drivers(query_engine=engine):
                 and ra.year between (SELECT year FROM every_one_first_year e WHERE e.driverId=r.driverId) and (SELECT year+2 FROM every_one_first_year e WHERE e.driverId=r.driverId)
                 GROUP BY driverId
                 ORDER BY driverId ASC
-            ), first_3_year_similarity(driverId, similarity) AS(
-                SELECT a.driverId, a.points/l.points AS Similarity_with_Lewis_in_first_three_year
-                FROM L_first_3_year_races_avg_points l, A_first_3_year_races_avg_points a
+            ), fst_3y_similar(driverId, similarity) AS(
+                SELECT a.driverId, a.points/l.points
+                FROM L_first_3_year_avg_pts l, fst_3y_avg_pts a
                 ORDER BY a.points/l.points DESC
                 --FETCH FIRST 10 ROW ONLY
             ),L_laps(raceId, lap, forename, surname, milliseconds) AS(
@@ -63,7 +63,7 @@ def c1_function_get_competitive_drivers(query_engine=engine):
                 FROM lapTimes l
                 INNER JOIN drivers d ON l.driverId=d.driverID
                 WHERE d.driverId = 1
-            ), someone_duration_compare_with_lewis_when_playing_in_same_lap(driverId, similarity) AS(
+            ), time_compare_l_insamelap(driverId, similarity) AS(
                 SELECT d.driverId, sum(l.milliseconds)/sum(ll.milliseconds) as similarity
                 FROM DRIVERS d 
                 INNER JOIN lapTimes l ON d.driverId=l.driverID
@@ -75,9 +75,9 @@ def c1_function_get_competitive_drivers(query_engine=engine):
             )
 
             SELECT driverId,d.forename, d.surname, (a.similarity+b.similarity+c.similarity)/3 as total_similarity_with_lewis
-            FROM someone_performance_compare_with_lewis_when_playing_in_same_game a
-            INNER JOIN first_3_year_similarity b USING (driverId)
-            INNER JOIN someone_duration_compare_with_lewis_when_playing_in_same_lap c USING (driverId)
+            FROM compare_lewis_same_game a
+            INNER JOIN fst_3y_similar b USING (driverId)
+            INNER JOIN time_compare_l_insamelap c USING (driverId)
             INNER JOIN drivers d USING (driverId)
             ORDER BY (a.similarity+b.similarity+c.similarity) DESC
             FETCH FIRST 10 ROWS ONLY
@@ -142,7 +142,7 @@ def c1_function_a(driverId,query_engine=engine):
 
 def c1_function_b(driverId, query_engine=engine):
     query = '''
-             WITH L_first_3_year_races(forename, surname, points, rank) AS(
+             WITH L_first_3y_races(forename, surname, points, rank) AS(
                 SELECT forename, surname, AVG(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
                 FROM results r
                 INNER JOIN races ra USING (raceId)
@@ -152,7 +152,7 @@ def c1_function_b(driverId, query_engine=engine):
                 ORDER BY ra.year ASC
                 FETCH FIRST 3 ROW ONLY
             ),
-            A_first_3_year_races(forename, surname, points, rank) AS(
+            A_first_3y_races(forename, surname, points, rank) AS(
                 SELECT forename, surname, AVG(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
                 FROM results r
                 INNER JOIN races ra USING (raceId)
@@ -165,15 +165,15 @@ def c1_function_b(driverId, query_engine=engine):
             SELECT rank AS year,
                     l.forename as Lewis_forename,l.surname as Lewis_surname, l.points AS Lewis_score,
                     a.forename as Others_forename, a.surname as Others_surname, a.points AS Others_score
-            FROM L_first_3_year_races l
-            INNER JOIN A_first_3_year_races a USING (rank)
+            FROM L_first_3y_races l
+            INNER JOIN A_first_3y_races a USING (rank)
             ORDER BY rank ASC
             '''.format(driverId) 
     data = pd.read_sql(query, query_engine)
     compare_first_three_years = data.to_json(orient="table")
 
     query = '''
-             WITH L_first_3_year_races(driverId, points, rank) AS(
+             WITH L_first_3y_races(driverId, points, rank) AS(
                 SELECT driverId, AVG(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
                 FROM results r
                 INNER JOIN races ra USING (raceId)
@@ -182,7 +182,7 @@ def c1_function_b(driverId, query_engine=engine):
                 ORDER BY ra.year ASC
                 FETCH FIRST 3 ROW ONLY
             ),
-            A_first_3_year_races(driverId, points, rank) AS(
+            A_first_3y_races(driverId, points, rank) AS(
                 SELECT driverId, AVG(r.points), RANK() OVER (ORDER BY ra.year ASC) rank
                 FROM results r
                 INNER JOIN races ra USING (raceId)
@@ -192,8 +192,8 @@ def c1_function_b(driverId, query_engine=engine):
                 FETCH FIRST 3 ROW ONLY
             )
             SELECT sum(l.points)/sum(a.points) AS similarity
-            FROM L_first_3_year_races l
-            INNER JOIN A_first_3_year_races a USING (rank)
+            FROM L_first_3y_races l
+            INNER JOIN A_first_3y_races a USING (rank)
             GROUP BY l.driverId
             '''.format(driverId) 
     data = pd.read_sql(query, query_engine)
